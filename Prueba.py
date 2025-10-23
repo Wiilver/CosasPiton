@@ -1,9 +1,7 @@
 from colorama import Fore, Style, Back
 
-print(Fore.RED + "Ayyuda")
-print("Buenas tardes")
+cosa = [[0]]
+lista = [Fore.BLUE, Fore.GREEN]
 
-print(Back.CYAN)
-
-print(Fore.BLACK + "A", Fore.RED + "B")
-print(Style.RESET_ALL)
+print(lista[cosa[0][0]] + "Cosa ".strip(), end="")
+print(lista[1] + "Buenas tardes")
