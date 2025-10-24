@@ -1,23 +1,64 @@
 import keyboard, time, os
 from colorama import Fore, Back
 
+#Ocupas checar para que se borren las cosas que has escrito en la consola
+
 def seleccionar_color():
     color = int(input("Esta es la lista de colores que puede seleccionar:\n"
           "1.- Rojo\n"
           "2.- Azul\n"
           "3.- Verde\n"
           "4.- Blanco \n"
+          "5.- Amarillo\n"
+          "6.- Cyan\n"
+          "7.- Negro\n"
+          "8.- Magenta\n"
           "Opcion : "))-1
     return color
 
 def seleccionar_material(materiales):
-    indice = int(input("Esta es la lista de materiales que puedes seleccionar:\n"
-                         "1.- #\n"
-                         "2.- O\n"
-                         "3.- =\n"
-                         "Opcion : "))-1
-    material = materiales[indice]
-    return material
+    indice = int(input("Estas son las categorias de materiales disponibles \n"
+                       "1.- Lineas\n"
+                       "2.- Texturas \n"
+                       "3.- Bloques\n"
+                       "4.- Otros\n"
+                       "5.- Del usuario\n"
+                       "Opcion : "))-1
+    if indice == 4:
+        if len(materiales[4]) == 0:
+            print("Hermano, esta lista esta vacia de momento")
+        else:
+            print("Estos son los materiales que tienes disponibles")
+            contador = 1
+            for i in materiales[4]:
+                print(f"{contador}.- {i}")
+                contador +=1
+            print()
+            indice = int(input("Material : "))
+            material = materiales[4][indice]
+            return material
+    elif indice == 0:
+        indice = int(input("Las lineas tienen dos subcategorias:\n"
+                           "1.- Lineas simples\n"
+                           "2.- Lineas dobles\n"
+                           "Favor de seleccionar que opcion desea : "))-1
+        contador = 1
+        for i in materiales[0][indice]:
+            print(f"{contador}.- {i}")
+            contador +=1
+        print()
+        indice2 = int(input("Material : "))
+        material = materiales[0][indice][indice2]
+        return material
+    else:
+        contador = 1
+        for i in materiales[indice]:
+            print(f"{contador}.- {i}")
+            contador += 1
+        print()
+        indice2 = int(input("Material : "))
+        material = materiales[indice][indice2]
+        return material
 
 def hacer_mapa(mapa, alto , ancho):
     for i in range (0, alto):
@@ -77,8 +118,21 @@ mapa = []
 mapa_colores = []
 moverse = ("flecha arriba", "flecha abajo", "flecha izquierda", "flecha derecha", "w", "a", "s", "d")
 
-colores= [Fore.RED, Fore.BLUE.strip(), Fore.GREEN, Fore.WHITE]
-materiales = [" # ", " O ", " = "]
+colores= [Fore.RED, Fore.BLUE, Fore.GREEN, Fore.WHITE, Fore.YELLOW, Fore.CYAN, Fore.BLACK, Fore.MAGENTA]
+
+lineas_simples = [" ┌─","─┘ ","─┐ ", " └─", "─┴─", "─┬─", " ├─", "───", "─┼─", "─┤ ", " │ "]
+lineas_dobles = ["═╣ ", " ║ ", "═╗ ", "═╝ ", " ╚═", " ╔═", "═╩═", "═╦═", " ╠═", "═══", "═╬═"]
+lineas = [lineas_simples, lineas_dobles]
+
+texturas = ["░░░", "▒▒▒", "▓▓▓", " ░ ", " ▒ ", " ▓ "]
+
+bloques = ["███", " █ "," ▄ ", " ▀ ", " ■ "]
+
+otros = [" ≡ ", " ¦ ", " ¤ ", " O "]
+
+del_usuario = []
+
+materiales = [lineas, texturas, bloques, otros, del_usuario]
 
 color = 3
 color_anterior = 3
@@ -100,6 +154,7 @@ impresion(mapa)
 
 while True:
     accion = keyboard.read_key()
+    time.sleep(.1)
     if moverse.__contains__(accion):
         mapa[y][x] = anterior
         mapa_colores [y][x] = color_anterior
@@ -113,6 +168,7 @@ while True:
         mapa_colores [y][x] = color        
     
     elif accion == "enter":
+        time.sleep(.2)
         anterior = material
         mapa[y][x] = material
         
