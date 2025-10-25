@@ -1,29 +1,55 @@
 import keyboard, time, os
 from colorama import Fore, Back
 
-#Ocupas checar para que se borren las cosas que has escrito en la consola
+#Ocupas hacer que se pueda cambiar el color del fondo
+
+os.system("")
 
 def seleccionar_color():
-    color = int(input("Esta es la lista de colores que puede seleccionar:\n"
-          "1.- Rojo\n"
-          "2.- Azul\n"
-          "3.- Verde\n"
-          "4.- Blanco \n"
-          "5.- Amarillo\n"
-          "6.- Cyan\n"
-          "7.- Negro\n"
-          "8.- Magenta\n"
-          "Opcion : "))-1
+    input("Presione ENTER para continuar...")
+    while True:
+        while True:
+            try:
+                color = int(input("Esta es la lista de colores que puede seleccionar:\n"
+                    "1.- Rojo\n"
+                    "2.- Azul\n"
+                    "3.- Verde\n"
+                    "4.- Blanco \n"
+                    "5.- Amarillo\n"
+                    "6.- Cyan\n"
+                    "7.- Negro\n"
+                    "8.- Magenta\n"
+                    "Opcion : "))-1
+                break
+            except:
+                print("Hubo un error, recuerda que solo puedes ingresar numeros")
+        if ((color < 0)|(color > 7)):
+            print("Hermano, el numero debe de estar entre el 1 y el 8, intentalo nuevamente")
+        else:
+            break
+    input("Presione ENTER para salir...")
+    
     return color
 
 def seleccionar_material(materiales):
-    indice = int(input("Estas son las categorias de materiales disponibles \n"
-                       "1.- Lineas\n"
-                       "2.- Texturas \n"
-                       "3.- Bloques\n"
-                       "4.- Otros\n"
-                       "5.- Del usuario\n"
-                       "Opcion : "))-1
+    input("Presione ENTER para continuar...")
+    while True:
+        while True:
+            try:
+                indice = int(input("Estas son las categorias de materiales disponibles \n"
+                                "1.- Lineas\n"
+                                "2.- Texturas \n"
+                                "3.- Bloques\n"
+                                "4.- Otros\n"
+                                "5.- Del usuario\n"
+                                "Opcion : "))-1
+                break
+            except:
+                print("Hermano, solo puedes ingresar numeros, por favor intentalo de nuevo")
+        if ((indice < 0)|(indice > 4)):
+            print("Hermano, el numero debe de estar entre 1 y 5, por favor intentalo nuevamente")
+        else:
+            break
     if indice == 4:
         if len(materiales[4]) == 0:
             print("Hermano, esta lista esta vacia de momento")
@@ -34,21 +60,53 @@ def seleccionar_material(materiales):
                 print(f"{contador}.- {i}")
                 contador +=1
             print()
-            indice = int(input("Material : "))
+            while True:
+                while True:
+                    try:
+                        indice = int(input("Material : "))-1
+                        break
+                    except:
+                        print("Hermano, solo puedes ingresar numeros, por favor intentalo nuevamente")
+                if ((indice < 0)|(indice > len(materiales[4]))):
+                    print(f"Hermano, el indice debe de estar entre 1 y {len(materiales[4])}, por favor intentalo nuevamente")
+                else:
+                    break
             material = materiales[4][indice]
+            input("Presione ENTER para salir...")
             return material
     elif indice == 0:
-        indice = int(input("Las lineas tienen dos subcategorias:\n"
-                           "1.- Lineas simples\n"
-                           "2.- Lineas dobles\n"
-                           "Favor de seleccionar que opcion desea : "))-1
+        while True:
+            while True:
+                try:
+                    indice = int(input("Las lineas tienen dos subcategorias:\n"
+                                    "1.- Lineas simples\n"
+                                    "2.- Lineas dobles\n"
+                                    "Favor de seleccionar que opcion desea : "))-1
+                    break
+                except:
+                    print("Hermano, solamente se admiten numeros, por favor intentalo nuevamente")
+            if ((indice < 0)|(indice > 1)):
+                print("Hermano, solo se admiten los valores 1 y 2, por favor intentalo nuevamente")
+            else:
+                break
         contador = 1
         for i in materiales[0][indice]:
             print(f"{contador}.- {i}")
             contador +=1
         print()
-        indice2 = int(input("Material : "))
+        while True:
+            while True:
+                try:
+                    indice2 = int(input("Material : "))-1
+                    break
+                except:
+                    print("Hermano, solo se admiten numeros, por favor intentalo nuevamente")
+            if ((indice2 < 0)|(indice2 > len(materiales[0][indice]))):
+                print(f"Hermano, el indice debe de estar entre 1 y {len(materiales[0][indice])}, por favor intentalo nuevamente")
+            else:
+                break
         material = materiales[0][indice][indice2]
+        input("Presione ENTER para salir...")
         return material
     else:
         contador = 1
@@ -56,8 +114,19 @@ def seleccionar_material(materiales):
             print(f"{contador}.- {i}")
             contador += 1
         print()
-        indice2 = int(input("Material : "))
+        while True:
+            while True:
+                try:
+                    indice2 = int(input("Material : "))-1
+                    break
+                except:
+                    print("Hermano, solo se admiten numeros, por favor intentalo nuevamente")
+            if ((indice2 < 0)|(indice2 > len(materiales[indice]))):
+                print(f"Hermano, el indice debe de estar entre 1 y {len(materiales[indice])}, por favor, intentalo de nuevo")
+            else:
+                break
         material = materiales[indice][indice2]
+        input("Presione ENTER para salir...")
         return material
 
 def hacer_mapa(mapa, alto , ancho):
@@ -87,7 +156,6 @@ def impresion(mapa):
         y += 1
     y= 0
     x = 0
-    print(mapa_colores[y][x])
 
 def movimiento( y, x, accion):
     if ((accion == "flecha arriba") | (accion == "w")):
@@ -108,9 +176,25 @@ def comandos():
     print("Esta es una lista de los comandos que tienes disponibles:\n\n"
           "Las teclas WASD, al igual que las flechas sirven para mover tu puntero\n"
           "ENTER sirve para colocar tu objeto en la posicion en la que estas actualmente\n"
-          "ESC sirve para salir del programa\n\n"
-          "Presione cualquier tecla para salir de este menu")
-
+          "ESC sirve para salir del programa\n")
+    input("Presione ENTER para salir...")
+    
+def nuevo_material():
+    input("Presione ENTER para iniciar...")
+    while True:
+        nuevo = input("Introduzca el material que quiera agregar al sistema\n"
+                  "Debe de tener en cuenta que necesita tener 3 o 1 caracter de largo\n"
+                  "Si es uno solo, el caracter se centrara y se rellenara con espacios:\n"
+                  "Nuevo material : ")
+        if len(nuevo) == 3:
+            break
+        elif len(nuevo) == 1:
+            nuevo = " " + nuevo + " "
+            break
+        else:
+            print("La longitud registrada del material no fue ni de 3 ni de 1 caracter, intentelo de nuevo")
+    input("Presione ENTER para salir...")
+    return nuevo
 
 #Variables
 
@@ -141,10 +225,15 @@ material = " O "
 
 
 #Empieza la cosa
+while True:
+    try:
+        alto = int(input("Escoja lo alto de su lienzo : ")) + 2
+        ancho = int(input("Escoja lo ancho de su lienzo: ")) + 2
+        break
+    except:
+        print("Hermano, solo se admiten numeros, por favor intentalo nuevamente")
 
-alto = int(input("Escoja lo alto de su lienzo : ")) + 2
-
-ancho = int(input("Escoja lo ancho de su lienzo: ")) + 2
+input("Presione ENTER para continuar")
 
 y = alto//2
 x = ancho//2
@@ -154,7 +243,8 @@ impresion(mapa)
 
 while True:
     accion = keyboard.read_key()
-    time.sleep(.1)
+    os.system("cls")
+
     if moverse.__contains__(accion):
         mapa[y][x] = anterior
         mapa_colores [y][x] = color_anterior
@@ -168,7 +258,6 @@ while True:
         mapa_colores [y][x] = color        
     
     elif accion == "enter":
-        time.sleep(.2)
         anterior = material
         mapa[y][x] = material
         
@@ -181,25 +270,21 @@ while True:
         
     elif ((accion == "'")|(accion == "¿")):
         comandos()
-        time.sleep(.2)
-        keyboard.read_key()
     
     elif accion == "m":
-        time.sleep(.2)
         material = seleccionar_material(materiales)
-        time.sleep(.2)
+    
+    elif accion == "n":
+        del_usuario.append(nuevo_material())
     
     elif accion == "c":
-        time.sleep(.2)
         color = seleccionar_color()
-        time.sleep(.2)
         
     elif accion == "esc":
         break
     
     else:
         print("No se reconocio el comando, presione cualquier tecla para continuar")
-        time.sleep(.2)
         keyboard.read_key()
         
     time.sleep(.1)
