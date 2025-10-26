@@ -1,6 +1,8 @@
 import keyboard, time, os
 from colorama import Fore, Back
 
+##Te deje la funcionm puesta, com el prieba puesto
+
 #Ocupas hacer que se pueda cambiar el color del fondo
 
 os.system("")
@@ -157,6 +159,21 @@ def impresion(mapa):
     y= 0
     x = 0
 
+def movimiento_prueba(y, x, accion):
+    if ((accion == "flecha arriba") | (accion == "w")):
+        if y > 1:
+            y -= 1
+    elif ((accion == "flecha abajo") | (accion == "s")):
+        if y < alto-2:
+            y += 1
+    elif ((accion == "flecha derecha") | (accion == "d")):
+        if x < ancho-2:
+            x += 1
+    elif ((accion == "flecha izquierda") | (accion == "a")):
+        if x > 1:
+            x -= 1
+    return y, x
+
 def movimiento( y, x, accion):
     if ((accion == "flecha arriba") | (accion == "w")):
         if y > 1:
@@ -222,6 +239,7 @@ color = 3
 color_anterior = 3
 anterior = "   "
 material = " O "
+prueba = False
 
 
 #Empieza la cosa
@@ -246,6 +264,9 @@ while True:
     os.system("cls")
 
     if moverse.__contains__(accion):
+        if prueba:
+            
+        
         mapa[y][x] = anterior
         mapa_colores [y][x] = color_anterior
         
@@ -279,6 +300,12 @@ while True:
     
     elif accion == "c":
         color = seleccionar_color()
+        
+    elif accion == "q":
+        if prueba:
+            prueba = False
+        else:
+            prueba = True
         
     elif accion == "esc":
         break
