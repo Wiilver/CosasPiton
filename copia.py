@@ -1,7 +1,7 @@
 import keyboard, time, os
 from colorama import Fore, Back
 
-##Te deje la funcionm puesta, com el prieba puesto
+#Falta que agregues los otros tipos de objeto, que reinicies la posicion al pasar al modo de prueba
 
 #Ocupas hacer que se pueda cambiar el color del fondo
 
@@ -134,9 +134,11 @@ def seleccionar_material(materiales):
 def hacer_mapa(mapa, alto , ancho):
     for i in range (0, alto):
         mapa.append([])
+        mapa_caracteristicas.append([])
         mapa_colores.append([])
         for j in range(0,ancho):
             mapa[i].append("   ")
+            mapa_caracteristicas[i].append("")
             mapa_colores[i].append(3)
             if ((i == 0) | (i == alto - 1)):
                 mapa[i][j] = "═══"
@@ -159,7 +161,7 @@ def impresion(mapa):
     y= 0
     x = 0
 
-def movimiento_prueba(y, x, accion):
+def movimiento(y, x, accion):
     if ((accion == "flecha arriba") | (accion == "w")):
         if y > 1:
             y -= 1
@@ -174,19 +176,39 @@ def movimiento_prueba(y, x, accion):
             x -= 1
     return y, x
 
-def movimiento( y, x, accion):
+def movimiento_prueba( y, x, accion):
     if ((accion == "flecha arriba") | (accion == "w")):
         if y > 1:
-            y -= 1
+            if mapa_caracteristicas[y-1][x] == "pared":
+                print("No puedes moverte en esa direccion, hay algo que te detiene")
+                time.sleep(.1)
+                keyboard.read_event()
+            else:
+                y -= 1
     elif ((accion == "flecha abajo") | (accion == "s")):
         if y < alto-2:
-            y += 1
+            if mapa_caracteristicas[y+1][x] == "pared":
+                print("No puedes moverte en esa direccion, hay algo que te detiene")
+                time.sleep(.1)
+                keyboard.read_event()
+            else:
+                y += 1
     elif ((accion == "flecha derecha") | (accion == "d")):
         if x < ancho-2:
-            x += 1
+            if mapa_caracteristicas[y][x+1] == "pared":
+                print("No puedes moverte en esa direccion, hay algo que te detiene")
+                time.sleep(.1)
+                keyboard.read_event()
+            else:
+                x += 1
     elif ((accion == "flecha izquierda") | (accion == "a")):
         if x > 1:
-            x -= 1
+            if mapa_caracteristicas[y][x-1] == "pared":
+                print("No puedes moverte en esa direccion, hay algo que te detiene")
+                time.sleep(.1)
+                keyboard.read_event()
+            else:
+                x -= 1
     return y, x
 
 def comandos():
@@ -213,10 +235,41 @@ def nuevo_material():
     input("Presione ENTER para salir...")
     return nuevo
 
+def tipo_material():
+    print("Presione ENTER para continuar")
+    while True:
+        while True:
+            try:
+                opcion = int(input("Seleccione el tipo de material que quiere usar:\n"
+                    "1.- Pared\n"
+                    "2.- Texto\n"
+                    "3.- Npc\n"
+                    "4.- Enemigo\n"
+                    "5.- Nulo\n"
+                    "Tipo : "))
+                break
+            except:
+                print("Solo se admiten valores numericos, por favor, intentelo de nuevo")
+        if ((opcion < 1)|(opcion > 5)):
+            print("Los valores deben de ir de 1 a 5, por favor, intentelo de nuevo")
+        else:
+            break
+    if opcion == 1:
+        return "pared"
+    elif opcion == 2:
+        return "texto"
+    elif opcion == 3:
+        return "npc"
+    elif opcion == 4:
+        return "enemigo"
+    elif opcion == 5:
+        return ""
 #Variables
 
 mapa = []
 mapa_colores = []
+mapa_caracteristicas = []
+# "pared", "texto", "npc", "enemigo", ""
 moverse = ("flecha arriba", "flecha abajo", "flecha izquierda", "flecha derecha", "w", "a", "s", "d")
 
 colores= [Fore.RED, Fore.BLUE, Fore.GREEN, Fore.WHITE, Fore.YELLOW, Fore.CYAN, Fore.BLACK, Fore.MAGENTA]
@@ -235,6 +288,7 @@ del_usuario = []
 
 materiales = [lineas, texturas, bloques, otros, del_usuario]
 
+tipo = ""
 color = 3
 color_anterior = 3
 anterior = "   "
@@ -262,59 +316,77 @@ impresion(mapa)
 while True:
     accion = keyboard.read_key()
     os.system("cls")
-
-    if moverse.__contains__(accion):
-        if prueba:
+    
+    if prueba:
+        if moverse.__contains__(accion):
+            mapa[y][x] = anterior
+            mapa_colores [y][x] = color_anterior
             
-        
-        mapa[y][x] = anterior
-        mapa_colores [y][x] = color_anterior
-        
-        y, x = movimiento(y, x, accion)
-        
-        anterior = mapa[y][x]
-        color_anterior = mapa_colores[y][x]
-        
-        mapa[y][x] = material
-        mapa_colores [y][x] = color        
-    
-    elif accion == "enter":
-        anterior = material
-        mapa[y][x] = material
-        
-        color_anterior = color
-        mapa_colores [y][x] = color
-        
-    elif accion == "backspace":
-        anterior = "   "
-        mapa[y][x] = "   "
-        
-    elif ((accion == "'")|(accion == "¿")):
-        comandos()
-    
-    elif accion == "m":
-        material = seleccionar_material(materiales)
-    
-    elif accion == "n":
-        del_usuario.append(nuevo_material())
-    
-    elif accion == "c":
-        color = seleccionar_color()
-        
-    elif accion == "q":
-        if prueba:
+            y, x = movimiento_prueba(y, x, accion)
+            
+            anterior = mapa[y][x]
+            color_anterior = mapa_colores[y][x]
+            
+            mapa[y][x] = material
+            mapa_colores [y][x] = color
+        elif accion == "q":
             prueba = False
-        else:
-            prueba = True
-        
-    elif accion == "esc":
-        break
-    
+            
     else:
-        print("No se reconocio el comando, presione cualquier tecla para continuar")
-        keyboard.read_key()
+        if moverse.__contains__(accion):
+            mapa[y][x] = anterior
+            mapa_colores [y][x] = color_anterior
+            
+            y, x = movimiento(y, x, accion)
+            
+            anterior = mapa[y][x]
+            color_anterior = mapa_colores[y][x]
+            
+            mapa[y][x] = material
+            mapa_colores [y][x] = color        
+        
+        elif accion == "enter":
+            anterior = material
+            mapa[y][x] = material
+            
+            color_anterior = color
+            mapa_colores [y][x] = color
+            
+            mapa_caracteristicas[y][x] = tipo
+            
+        elif accion == "backspace":
+            anterior = "   "
+            mapa[y][x] = "   "
+            
+        elif ((accion == "'")|(accion == "¿")):
+            comandos()
+        
+        elif accion == "m":
+            material = seleccionar_material(materiales)
+        
+        elif accion == "n":
+            del_usuario.append(nuevo_material())
+        
+        elif accion == "c":
+            color = seleccionar_color()
+            
+        elif accion == "q":
+            prueba = True
+            
+        elif accion == "t":
+            tipo = tipo_material()
+            
+        elif accion == "esc":
+            break
+        
+        else:
+            print("No se reconocio el comando, presione cualquier tecla para continuar")
+            keyboard.read_key()
         
     time.sleep(.1)
     os.system("cls")
+    if not prueba:
+        print(f"El material que esta usando tiene tipo {tipo}\n")
+        print(f"El tipo de esta casilla es {mapa_caracteristicas[y][x]}")
     impresion(mapa)
 os.system("cls")
