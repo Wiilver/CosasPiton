@@ -235,6 +235,21 @@ def nuevo_material():
     input("Presione ENTER para salir...")
     return nuevo
 
+def nuevo_texto():
+    while True:
+            nombre = input("Para introducir un texto, primero introduce el titulo del mismo : ")
+            if not nombre:
+                print("Debes de poner por lo mismo un caracter, por favor, intentalo de nuevo")
+            else:
+                break
+    while True:
+        contenido = input("Ahora introduce el texto que ira dentro : ")
+        if not contenido:
+            print("Necesiitas poner algo dentro, por favor, intentalo de nuevo")
+        else:
+            break
+    return nombre, contenido
+
 def tipo_material():
     print("Presione ENTER para continuar")
     while True:
@@ -257,13 +272,42 @@ def tipo_material():
     if opcion == 1:
         return "pared"
     elif opcion == 2:
-        return "texto"
+        if not textos:
+            while True:
+                crear = input("Parece que no tienes textos hechos, quieres crear uno (S/N)?: ")
+                if crear == "S":
+                    nombre, contenido = nuevo_texto()
+                    textos[nombre] = contenido
+                    return f"texto_{nombre}"
+                elif crear == "N":
+                    print(end="")
+                    break
+                else:
+                    print("Favor de utilizar una S o una N como respuesta")
+        else:
+            while True:
+                crear = input("Quiere crear un texto nuevo o utilizar uno antiguo (N/A)?: ")
+                if crear == "N":
+                    nombre, contenido = nuevo_texto()
+                    textos[nombre] = contenido
+                    return f"texto_{nombre}"
+                elif crear == "A":
+                    print("Esta es una lista de los textos que ya tienes hechos:")
+                    contador = 1
+                    for i in textos.keys():
+                        print(f"{contador}.- {i}")
+                    opcion = input("Seleccione el titulo del texto que quiera reutilizar : ")
+                    if textos.keys().__contains__(opcion):
+                        return f"texto_{opcion}"
+                else:
+                    print("Por favor, utilizar N o A como respuesta")
     elif opcion == 3:
         return "npc"
     elif opcion == 4:
         return "enemigo"
     elif opcion == 5:
         return ""
+
 #Variables
 
 mapa = []
@@ -285,6 +329,8 @@ bloques = ["███", " █ "," ▄ ", " ▀ ", " ■ "]
 otros = [" ≡ ", " ¦ ", " ¤ ", " O "]
 
 del_usuario = []
+
+textos = {}
 
 materiales = [lineas, texturas, bloques, otros, del_usuario]
 
@@ -314,6 +360,8 @@ hacer_mapa(mapa, alto, ancho)
 impresion(mapa)
 
 while True:
+    textos.update()
+    print(textos)
     accion = keyboard.read_key()
     os.system("cls")
     
@@ -329,6 +377,12 @@ while True:
             
             mapa[y][x] = material
             mapa_colores [y][x] = color
+            
+            if mapa_caracteristicas[y][x].startswith("texto"):
+                clave = mapa_caracteristicas[y][x].split("_")
+                input("...")
+                input(f"\n{textos[mapa_caracteristicas[y][x].split("_")[1]]}")
+            
         elif accion == "q":
             prueba = False
             

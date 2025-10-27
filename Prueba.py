@@ -1,7 +1,22 @@
 from colorama import Fore, Style, Back
 
-cosa = [[0]]
-lista = [Fore.BLUE, Fore.GREEN]
+diccionario = {"Hola" : "Hola muy buenas tardes, me complace mucho decirle que me cae muy bien", "Adios" : "Me despido de ti, que tengas suerte"}
 
-print(lista[cosa[0][0]] + "Cosa ".strip(), end="")
-print(lista[1] + "Buenas tardes")
+lista_llaves = list(diccionario.keys())
+
+for i in lista_llaves:
+    print(i)
+
+print(diccionario[lista_llaves[0]])
+
+diccionario["Platica"] = "Parece que el dia esta lindo hoy no?"
+
+print(diccionario["Platica"])
+
+a = "a_b"
+a = a.split("_")
+print(a)
+
+diccionario.update("Saludo", "Buenas tardes")
+
+print(diccionario[])
