@@ -3,8 +3,6 @@ from colorama import Fore, Back
 
 #Falta que agregues los otros tipos de objeto, que reinicies la posicion al pasar al modo de prueba
 
-#Ocupas hacer que se pueda cambiar el color del fondo
-
 os.system("")
 
 def seleccionar_color():
@@ -136,10 +134,12 @@ def hacer_mapa(mapa, alto , ancho):
         mapa.append([])
         mapa_caracteristicas.append([])
         mapa_colores.append([])
+        mapa_fondo.append([])
         for j in range(0,ancho):
             mapa[i].append("   ")
             mapa_caracteristicas[i].append("")
             mapa_colores[i].append(3)
+            mapa_fondo[i].append(6)
             if ((i == 0) | (i == alto - 1)):
                 mapa[i][j] = "═══"
             if ((j == 0) | (j == ancho - 1)):
@@ -154,7 +154,9 @@ def impresion(mapa):
     for i in mapa:
         x = 0
         for j in i:
-            print(colores[mapa_colores[y][x]] + j + colores[3].strip(), end="")
+            print(fondos[mapa_fondo[y][x]], end="")
+            print(colores[mapa_colores[y][x]], end="")
+            print(j,end="")
             x += 1
         print()
         y += 1
@@ -311,11 +313,13 @@ def tipo_material():
 #Variables
 
 mapa = []
+mapa_fondo= []
 mapa_colores = []
 mapa_caracteristicas = []
 # "pared", "texto", "npc", "enemigo", ""
 moverse = ("flecha arriba", "flecha abajo", "flecha izquierda", "flecha derecha", "w", "a", "s", "d")
 
+fondos = [Back.RED, Back.BLUE, Back.GREEN, Back.WHITE, Back.YELLOW, Back.CYAN, Back.BLACK, Back.MAGENTA]
 colores= [Fore.RED, Fore.BLUE, Fore.GREEN, Fore.WHITE, Fore.YELLOW, Fore.CYAN, Fore.BLACK, Fore.MAGENTA]
 
 lineas_simples = [" ┌─","─┘ ","─┐ ", " └─", "─┴─", "─┬─", " ├─", "───", "─┼─", "─┤ ", " │ "]
@@ -335,7 +339,9 @@ textos = {}
 materiales = [lineas, texturas, bloques, otros, del_usuario]
 
 tipo = ""
+fondo = 6
 color = 3
+fondo_anterior = 6
 color_anterior = 3
 anterior = "   "
 material = " O "
@@ -362,20 +368,23 @@ impresion(mapa)
 while True:
     textos.update()
     print(textos)
-    accion = keyboard.read_key()
+    accion = keyboard.read_key().lower()
     os.system("cls")
     
     if prueba:
         if moverse.__contains__(accion):
             mapa[y][x] = anterior
             mapa_colores [y][x] = color_anterior
+            mapa_fondo [y][x] = fondo_anterior
             
             y, x = movimiento_prueba(y, x, accion)
             
             anterior = mapa[y][x]
+            fondo_anterior = mapa_fondo[y][x]
             color_anterior = mapa_colores[y][x]
             
             mapa[y][x] = material
+            mapa_fondo [y][x] = fondo
             mapa_colores [y][x] = color
             
             if mapa_caracteristicas[y][x].startswith("texto"):
@@ -390,13 +399,16 @@ while True:
         if moverse.__contains__(accion):
             mapa[y][x] = anterior
             mapa_colores [y][x] = color_anterior
+            mapa_fondo [y][x] = fondo_anterior
             
             y, x = movimiento(y, x, accion)
             
             anterior = mapa[y][x]
+            fondo_anterior = mapa_fondo[y][x]
             color_anterior = mapa_colores[y][x]
             
             mapa[y][x] = material
+            mapa_fondo [y][x] = fondo
             mapa_colores [y][x] = color        
         
         elif accion == "enter":
@@ -405,6 +417,9 @@ while True:
             
             color_anterior = color
             mapa_colores [y][x] = color
+            
+            fondo_anterior = fondo
+            mapa_fondo [y][x] = fondo
             
             mapa_caracteristicas[y][x] = tipo
             
@@ -429,6 +444,9 @@ while True:
             
         elif accion == "t":
             tipo = tipo_material()
+            
+        elif accion == "f":
+            fondo = seleccionar_color()
             
         elif accion == "esc":
             break
