@@ -1,7 +1,7 @@
 import keyboard, time, os
 from colorama import Fore, Back
 
-#Falta que agregues los otros tipos de objeto, que reinicies la posicion al pasar al modo de prueba
+#Falta que agregues los otros tipos de objeto
 
 os.system("")
 
@@ -10,7 +10,7 @@ def seleccionar_color():
     while True:
         while True:
             try:
-                color = int(input("Esta es la lista de colores que puede seleccionar:\n"
+                opcion = int(input("Esta es la lista de colores que puede seleccionar:\n"
                     "1.- Rojo\n"
                     "2.- Azul\n"
                     "3.- Verde\n"
@@ -23,13 +23,13 @@ def seleccionar_color():
                 break
             except:
                 print("Hubo un error, recuerda que solo puedes ingresar numeros")
-        if ((color < 0)|(color > 7)):
+        if ((opcion < 0)|(opcion > 7)):
             print("Hermano, el numero debe de estar entre el 1 y el 8, intentalo nuevamente")
         else:
             break
     input("Presione ENTER para salir...")
     
-    return color
+    return opcion
 
 def seleccionar_material(materiales):
     input("Presione ENTER para continuar...")
@@ -155,8 +155,7 @@ def impresion(mapa):
         x = 0
         for j in i:
             print(fondos[mapa_fondo[y][x]], end="")
-            print(colores[mapa_colores[y][x]], end="")
-            print(j,end="")
+            print(colores[mapa_colores[y][x]] + j, end="")
             x += 1
         print()
         y += 1
@@ -263,11 +262,12 @@ def tipo_material():
                     "3.- Npc\n"
                     "4.- Enemigo\n"
                     "5.- Nulo\n"
+                    "6.- Punto de inicio\n"
                     "Tipo : "))
                 break
             except:
                 print("Solo se admiten valores numericos, por favor, intentelo de nuevo")
-        if ((opcion < 1)|(opcion > 5)):
+        if ((opcion < 1)|(opcion > 6)):
             print("Los valores deben de ir de 1 a 5, por favor, intentelo de nuevo")
         else:
             break
@@ -309,6 +309,8 @@ def tipo_material():
         return "enemigo"
     elif opcion == 5:
         return ""
+    elif opcion == 6:
+        return "inicio"
 
 #Variables
 
@@ -316,7 +318,8 @@ mapa = []
 mapa_fondo= []
 mapa_colores = []
 mapa_caracteristicas = []
-# "pared", "texto", "npc", "enemigo", ""
+# "pared", "texto", "npc", "enemigo", "", "inicio"
+
 moverse = ("flecha arriba", "flecha abajo", "flecha izquierda", "flecha derecha", "w", "a", "s", "d")
 
 fondos = [Back.RED, Back.BLUE, Back.GREEN, Back.WHITE, Back.YELLOW, Back.CYAN, Back.BLACK, Back.MAGENTA]
@@ -341,6 +344,7 @@ materiales = [lineas, texturas, bloques, otros, del_usuario]
 tipo = ""
 fondo = 6
 color = 3
+inicio = 0
 fondo_anterior = 6
 color_anterior = 3
 anterior = "   "
@@ -361,6 +365,7 @@ input("Presione ENTER para continuar")
 
 y = alto//2
 x = ancho//2
+punto_inicio = [y,x]
 
 hacer_mapa(mapa, alto, ancho)
 impresion(mapa)
@@ -421,11 +426,30 @@ while True:
             fondo_anterior = fondo
             mapa_fondo [y][x] = fondo
             
-            mapa_caracteristicas[y][x] = tipo
+            if tipo == "inicio":
+                if inicio == 1:
+                    while True:
+                        opcion = input("Parece que ya tienes un punto de inicio registrado, ¿quieres borrar el anterior y guardar este (S/N)? : ").upper()
+                        if opcion == "S":
+                            mapa_caracteristicas [punto_inicio[0]][punto_inicio[1]] = ""
+                            mapa_caracteristicas [y][x] = "inicio"
+                            
+                            punto_inicio[0] = y
+                            punto_inicio[1] = x
+                            break
+                        elif opcion == "N":
+                            break
+                        else:
+                            print("Hubo un error camarada, solo se admiten S o N como respuesta, por favor, intentalo nuevamente")
+            else:
+                mapa_caracteristicas[y][x] = tipo
             
         elif accion == "backspace":
             anterior = "   "
             mapa[y][x] = "   "
+            mapa_colores[y][x] = 3
+            mapa_fondo[y][x] = 6
+            mapa_caracteristicas = ""
             
         elif ((accion == "'")|(accion == "¿")):
             comandos()
@@ -440,11 +464,16 @@ while True:
             color = seleccionar_color()
             
         elif accion == "q":
+            mapa[y][x] = anterior
+            y = punto_inicio[0]
+            x = punto_inicio[1]
             prueba = True
             
         elif accion == "t":
             tipo = tipo_material()
-            
+            if tipo == "inicio":
+                inicio = 1
+        
         elif accion == "f":
             fondo = seleccionar_color()
             

@@ -1,6 +1,6 @@
 from colorama import Fore, Style, Back
 
 
-print(Back.WHITE, end="")
-print(Fore.RED, end = "")
+print(Back.RED, end="")
+print(Fore.YELLOW, end = "")
 print("Buenas tardes")
