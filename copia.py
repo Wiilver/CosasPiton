@@ -1,7 +1,7 @@
 import keyboard, time, os
 from colorama import Fore, Back
 
-#Falta que agregues los otros tipos de objeto
+#Falta que agregues Npc´s y enemigos
 
 os.system("")
 
@@ -237,6 +237,7 @@ def nuevo_material():
     return nuevo
 
 def nuevo_texto():
+    contenido = []
     while True:
             nombre = input("Para introducir un texto, primero introduce el titulo del mismo : ")
             if not nombre:
@@ -244,11 +245,19 @@ def nuevo_texto():
             else:
                 break
     while True:
-        contenido = input("Ahora introduce el texto que ira dentro : ")
-        if not contenido:
+        letras = input("Ahora introduce el texto : ")
+        if not letras:
             print("Necesiitas poner algo dentro, por favor, intentalo de nuevo")
         else:
-            break
+            contenido.append(letras)
+            while True:
+                opcion = input("Quieres agregar otra linea de texto (S/N)?").upper()
+                if ((opcion!="S")&(opcion!="N")):
+                    print("Por favor, solo se admite S o N como respuesta, escriba bien mi estimado")
+                else:
+                    break
+            if opcion == "N":
+                break
     return nombre, contenido
 
 def tipo_material():
@@ -263,26 +272,29 @@ def tipo_material():
                     "4.- Enemigo\n"
                     "5.- Nulo\n"
                     "6.- Punto de inicio\n"
+                    "7.- Interaccion\n"
                     "Tipo : "))
                 break
             except:
                 print("Solo se admiten valores numericos, por favor, intentelo de nuevo")
-        if ((opcion < 1)|(opcion > 6)):
+        if ((opcion < 1)|(opcion > 7)):
             print("Los valores deben de ir de 1 a 5, por favor, intentelo de nuevo")
         else:
             break
     if opcion == 1:
         return "pared"
-    elif opcion == 2:
+    elif ((opcion == 2)|(opcion == 7)):
         if not textos:
             while True:
                 crear = input("Parece que no tienes textos hechos, quieres crear uno (S/N)?: ")
                 if crear == "S":
                     nombre, contenido = nuevo_texto()
                     textos[nombre] = contenido
-                    return f"texto_{nombre}"
+                    if opcion == 2:
+                        return f"texto_{nombre}"
+                    else:
+                        return f"interaccion_{nombre}"
                 elif crear == "N":
-                    print(end="")
                     break
                 else:
                     print("Favor de utilizar una S o una N como respuesta")
@@ -292,7 +304,10 @@ def tipo_material():
                 if crear == "N":
                     nombre, contenido = nuevo_texto()
                     textos[nombre] = contenido
-                    return f"texto_{nombre}"
+                    if opcion == 2:
+                        return f"texto_{nombre}"
+                    else:
+                        f"interaccion_{nombre}"
                 elif crear == "A":
                     print("Esta es una lista de los textos que ya tienes hechos:")
                     contador = 1
@@ -300,9 +315,13 @@ def tipo_material():
                         print(f"{contador}.- {i}")
                     opcion = input("Seleccione el titulo del texto que quiera reutilizar : ")
                     if textos.keys().__contains__(opcion):
-                        return f"texto_{opcion}"
+                        if opcion == 2:
+                            return f"texto_{opcion}"
+                        else:
+                            f"interaccion_{nombre}"
                 else:
                     print("Por favor, utilizar N o A como respuesta")
+    
     elif opcion == 3:
         return "npc"
     elif opcion == 4:
@@ -311,14 +330,20 @@ def tipo_material():
         return ""
     elif opcion == 6:
         return "inicio"
-
+    
+def leer():
+    clave = mapa_caracteristicas[y][x].split("_")[1]
+    input("...")
+    for i in textos[clave]:
+        input(f"{i}\n")
+        
 #Variables
 
 mapa = []
 mapa_fondo= []
 mapa_colores = []
 mapa_caracteristicas = []
-# "pared", "texto", "npc", "enemigo", "", "inicio"
+# "pared", "texto", "npc", "enemigo", "", "inicio", "interaccion"
 
 moverse = ("flecha arriba", "flecha abajo", "flecha izquierda", "flecha derecha", "w", "a", "s", "d")
 
@@ -374,7 +399,6 @@ while True:
     textos.update()
     print(textos)
     accion = keyboard.read_key().lower()
-    os.system("cls")
     
     if prueba:
         if moverse.__contains__(accion):
@@ -393,9 +417,15 @@ while True:
             mapa_colores [y][x] = color
             
             if mapa_caracteristicas[y][x].startswith("texto"):
-                clave = mapa_caracteristicas[y][x].split("_")
-                input("...")
-                input(f"\n{textos[mapa_caracteristicas[y][x].split("_")[1]]}")
+                leer()
+
+            elif mapa_caracteristicas[y][x].startswith("interaccion"):
+                print("Tu personaje esta pensando algo, presiona ENTER para escucharlo")
+                time.sleep(.1)
+                pensar = keyboard.read_key()
+                if pensar == "enter":
+                    leer()
+                    
             
         elif accion == "q":
             prueba = False
@@ -449,7 +479,7 @@ while True:
             mapa[y][x] = "   "
             mapa_colores[y][x] = 3
             mapa_fondo[y][x] = 6
-            mapa_caracteristicas = ""
+            mapa_caracteristicas [y][x] = ""
             
         elif ((accion == "'")|(accion == "¿")):
             comandos()
