@@ -1,10 +1,130 @@
 import keyboard, time, os
 from colorama import Fore, Back
 
-#Falta que agregues Npc´s y enemigos
+#Falta que enemigos, debes de hacerlo mejor, con cls, inputs, sleeps y tal
 
-os.system("")
+#Variables
 
+personaje = [" O ", 3]
+
+cara = []
+cara_vacia = []
+
+mapa = []
+mapa_fondo= []
+mapa_colores = []
+mapa_caracteristicas = []
+# "pared", "texto", "npc", "enemigo", "", "inicio", "interaccion"
+
+moverse = ("flecha arriba", "flecha abajo", "flecha izquierda", "flecha derecha", "w", "a", "s", "d")
+
+fondos = [Back.RED, Back.BLUE, Back.GREEN, Back.WHITE, Back.YELLOW, Back.CYAN, Back.BLACK, Back.MAGENTA]
+colores= [Fore.RED, Fore.BLUE, Fore.GREEN, Fore.WHITE, Fore.YELLOW, Fore.CYAN, Fore.BLACK, Fore.MAGENTA]
+
+lineas_simples = [" ┌─","─┘ ","─┐ ", " └─", "─┴─", "─┬─", " ├─", "───", "─┼─", "─┤ ", " │ "]
+lineas_dobles = ["═╣ ", " ║ ", "═╗ ", "═╝ ", " ╚═", " ╔═", "═╩═", "═╦═", " ╠═", "═══", "═╬═"]
+lineas = [lineas_simples, lineas_dobles]
+
+texturas = ["░░░", "▒▒▒", "▓▓▓", " ░ ", " ▒ ", " ▓ "]
+
+bloques = ["███", " █ "," ▄ ", " ▀ ", " ■ "]
+
+otros = [" ≡ ", " ¦ ", " ¤ ", " O "]
+
+del_usuario = []
+
+materiales = [lineas, texturas, bloques, otros, del_usuario]
+
+
+npcs_caras = {}
+textos = {}
+conversaciones = {}
+
+tipo = ""
+
+material = " O "
+anterior = "   "
+
+fondo = 6
+fondo_anterior = 6
+
+color = 3
+color_anterior = 3
+
+inicio = 0
+
+
+prueba = False
+
+
+def crear_expresion_npc():
+    #Nombrarlo
+    while True:
+        nombre_npc = input("Primero que nada, introduzca el nombre de su NPC : ")
+        if not nombre_npc:
+            print("Necesita tener un nombre, por favor intentelo de nuevo\n")
+        else:
+            break
+    print("Define como se ve el NPC al hablar con él")
+    npcs_caras[nombre_npc] = cara_npc(material)
+            
+def cara_npc(material):
+    y = 3
+    x = 3
+    cara = cara_vacia
+    while True:
+        accion = keyboard.read_key().lower()
+        if moverse.__contains__(accion):
+            cara[y][x] = anterior
+            
+            y, x = movimiento(y, x, accion, 5, 5)
+            
+            anterior = cara[y][x]
+            cara[y][x] = material
+            
+        elif accion == "enter":
+            anterior = material
+            cara[y][x] = material
+        
+        elif accion == "backspace":
+            cara[y][x] = "   "
+            anterior = "   "
+        
+        elif accion == "m":
+            material = seleccionar_material(materiales)
+            
+        elif accion == "esc":
+            while True:
+                opcion = input("Seguro que así quiere que se vea el npc? Esta configuracion no se podra cambiar (S/N) : ").upper().strip()
+                if opcion == "S":
+                    return cara
+                elif opcion != "N":
+                    print("Solo se admite S o N como respuesta, por favor, vuelve a intentarlo")
+                else:
+                    break
+        time.sleep(.1)
+        os.system("cls")
+        impresion_cara(cara)
+    
+def crear_personaje():
+    while True:
+        input("...")
+        print("Considere que solo pueden usarse 1 o 3 caracteres, los espacios cuentan")
+        personaje = input("Introduzca los caracteres que conformen el personaje del jugador : ")
+        if not personaje:
+            print("Por favor, intentelo de nuevo")
+        elif len(personaje) == 1:
+            personaje = " " + personaje + " "
+            break
+        elif len(personaje) == 3:
+            break
+        else:
+            print("La longitud no coincide ni con 1 ni con 3 caracteres, por favor intentelo de nuevo")
+    print("Ahora seleccionaras el color del personaje")
+    color = seleccionar_color()
+    
+    return personaje, color
+    
 def seleccionar_color():
     input("Presione ENTER para continuar...")
     while True:
@@ -129,6 +249,20 @@ def seleccionar_material(materiales):
         input("Presione ENTER para salir...")
         return material
 
+def hacer_cara():
+    for i in range (0,7):
+        cara_vacia.append([])
+        for j in range (0,7):
+            cara_vacia[i].append("   ")
+            if ((i == 0)|(i == 6)):
+                cara_vacia[i][j] = "═══"
+            if ((j == 0)|(j == 6)):
+                cara_vacia[i][j] = " ║ "
+    cara_vacia[0][0] = " ╔═"
+    cara_vacia[6][0] = " ╚═"
+    cara_vacia[0][6] = "═╗ "
+    cara_vacia[6][6] = "═╝ "
+    
 def hacer_mapa(mapa, alto , ancho):
     for i in range (0, alto):
         mapa.append([])
@@ -149,6 +283,18 @@ def hacer_mapa(mapa, alto , ancho):
     mapa[0][ancho-1] = "═╗ "
     mapa[alto-1][ancho-1] = "═╝ "
 
+def impresion_cara(cara):
+    y = 0
+    for i in cara:
+        x = 0
+        for j in i:
+            print(j, end="")
+            x += 1
+        print()
+        y += 1
+    y= 0
+    x = 0
+
 def impresion(mapa):
     y = 0
     for i in mapa:
@@ -162,15 +308,15 @@ def impresion(mapa):
     y= 0
     x = 0
 
-def movimiento(y, x, accion):
+def movimiento(y, x, accion, altura, gordeza):
     if ((accion == "flecha arriba") | (accion == "w")):
         if y > 1:
             y -= 1
     elif ((accion == "flecha abajo") | (accion == "s")):
-        if y < alto-2:
+        if y < altura:
             y += 1
     elif ((accion == "flecha derecha") | (accion == "d")):
-        if x < ancho-2:
+        if x < gordeza:
             x += 1
     elif ((accion == "flecha izquierda") | (accion == "a")):
         if x > 1:
@@ -214,9 +360,16 @@ def movimiento_prueba( y, x, accion):
 
 def comandos():
     print("Esta es una lista de los comandos que tienes disponibles:\n\n"
-          "Las teclas WASD, al igual que las flechas sirven para mover tu puntero\n"
+          "Las teclas WASD, al igual que las flechas, sirven para mover tu puntero\n"
           "ENTER sirve para colocar tu objeto en la posicion en la que estas actualmente\n"
-          "ESC sirve para salir del programa\n")
+          "BACKSPACE sirve para borrar el la casilla actual, también resetea su color, tipo y fondo\n\n"
+          "M sirve para escoger el material que usaras\n"
+          "N sirve para crear un nuevo material\n"
+          "T sirve para escoger el tipo/propiedad del material\n"
+          "C sirve para escoger el color del material\n"
+          "F sirve para escoger el color del fondo del material\n\n"
+          "Q sirve para cambiar entre el modo de prueba y el editor\n\n"
+          "ESC sirve para salir del programa (solo lo puedes hacer desde el editor)\n")
     input("Presione ENTER para salir...")
     
 def nuevo_material():
@@ -236,6 +389,54 @@ def nuevo_material():
     input("Presione ENTER para salir...")
     return nuevo
 
+def nueva_conversacion():
+    while True:
+        nombre = input("Primero que nada, pongale un nombre a la conversacion : ")
+        if not nombre:
+            print("Hermano, pon algo minimo")
+        else:
+            break
+    conversacion = []
+    contador = 1
+    for i in npcs_caras.keys():
+        print(f"{contador}.- {i}")
+        contador += 1
+    while True:
+        try:
+            escoger_cara = input("Esta es una lista de las expresiones que has creado, escoge cual quieras usar : ")
+            if npcs_caras.keys().__contains__(escoger_cara):
+                for i in textos.keys():
+                    print(f"{contador}.- {i}")
+                    contador += 1
+                while True:
+                    try:
+                        
+                        escoger = input("Esta es una lista de los textos que has creado, escoge cual quieras usar : ")
+                        if not textos.keys().__contains__(escoger):
+                            print("Respondiste con una clave que no existe, por favor, intentalo de nuevo")
+                        elif not escoger:
+                            print("Hermanito, por favor, minimo contesta algo")
+                        else:
+                            conversacion.append([escoger_cara, escoger])
+                            while True:
+                                escoger = input("Deseas agregar otra viñeta (S/N) : ").upper().strip()
+                                if ((escoger != "S")&(escoger != "N")):
+                                    print("Hermano, solo se admiten S o N como respuestas, por favor intentalo nuevamente")
+                                else:
+                                    break
+                        if escoger == "N":
+                            return conversacion, nombre
+                        else:
+                            break
+                    except:
+                        print("Hermano, hubo un error con el dato que me tiraste, por favor, intentalo de nuevo")
+            elif not escoger_cara:
+                print("Hermanito, por favor, minimo contesta algo")
+            else:
+                print("La clave que introdujiste no coincide con ninguna que te hubieran dado, por favor, intentalo nuevamente")
+        except:
+            print("Hermano, hubo un error con el dato que me tiraste, por favor, intentalo de nuevo")
+        
 def nuevo_texto():
     contenido = []
     while True:
@@ -323,7 +524,30 @@ def tipo_material():
                     print("Por favor, utilizar N o A como respuesta")
     
     elif opcion == 3:
-        return "npc"
+        if not npcs_caras:
+            while True:
+                hacer = input("Parece que aún no tienes ninguna expresion hecha, deseas crear una (S/N) ?").upper().strip()
+                if hacer == "S":
+                    crear_expresion_npc()
+                    break
+                elif hacer == "N":
+                    return ""
+                else:
+                    print("Solo puedes usar S o N como respuesta, por favor, contesta bien")
+        if not textos:
+            while True:
+                hacer = input("Para crear un npc necesitas tener minimo un texto creado, deseas hacer uno nuevo (S/N)? : ").upper().strip()
+                if hacer == "S":
+                    nombre, contenido = nuevo_texto()
+                    textos[nombre] = contenido
+                    break
+                elif hacer == "N":
+                    return ""
+                else:
+                    print("Por favor, esfuercese para contestar con S o N solamente e intentelo de nuevo")
+        chat, nombre = nueva_conversacion()
+        conversaciones[nombre] = chat
+        return f"npc_{nombre}"
     elif opcion == 4:
         return "enemigo"
     elif opcion == 5:
@@ -331,52 +555,24 @@ def tipo_material():
     elif opcion == 6:
         return "inicio"
     
+def mostrar_conversacion():
+    clave = mapa_caracteristicas[y][x].split("_")[1]
+    largo = len(conversaciones[clave])
+    for i in range(0, largo):
+        for j in npcs_caras[conversaciones[clave][i][0]]:
+            for k in j:
+                print(k, end="")
+            print()
+        for j in textos[conversaciones[clave][i][1]]:
+            input(f"{j}\n") 
+
 def leer():
     clave = mapa_caracteristicas[y][x].split("_")[1]
     input("...")
     for i in textos[clave]:
         input(f"{i}\n")
+
         
-#Variables
-
-mapa = []
-mapa_fondo= []
-mapa_colores = []
-mapa_caracteristicas = []
-# "pared", "texto", "npc", "enemigo", "", "inicio", "interaccion"
-
-moverse = ("flecha arriba", "flecha abajo", "flecha izquierda", "flecha derecha", "w", "a", "s", "d")
-
-fondos = [Back.RED, Back.BLUE, Back.GREEN, Back.WHITE, Back.YELLOW, Back.CYAN, Back.BLACK, Back.MAGENTA]
-colores= [Fore.RED, Fore.BLUE, Fore.GREEN, Fore.WHITE, Fore.YELLOW, Fore.CYAN, Fore.BLACK, Fore.MAGENTA]
-
-lineas_simples = [" ┌─","─┘ ","─┐ ", " └─", "─┴─", "─┬─", " ├─", "───", "─┼─", "─┤ ", " │ "]
-lineas_dobles = ["═╣ ", " ║ ", "═╗ ", "═╝ ", " ╚═", " ╔═", "═╩═", "═╦═", " ╠═", "═══", "═╬═"]
-lineas = [lineas_simples, lineas_dobles]
-
-texturas = ["░░░", "▒▒▒", "▓▓▓", " ░ ", " ▒ ", " ▓ "]
-
-bloques = ["███", " █ "," ▄ ", " ▀ ", " ■ "]
-
-otros = [" ≡ ", " ¦ ", " ¤ ", " O "]
-
-del_usuario = []
-
-textos = {}
-
-materiales = [lineas, texturas, bloques, otros, del_usuario]
-
-tipo = ""
-fondo = 6
-color = 3
-inicio = 0
-fondo_anterior = 6
-color_anterior = 3
-anterior = "   "
-material = " O "
-prueba = False
-
-
 #Empieza la cosa
 while True:
     try:
@@ -393,6 +589,8 @@ x = ancho//2
 punto_inicio = [y,x]
 
 hacer_mapa(mapa, alto, ancho)
+hacer_cara()
+
 impresion(mapa)
 
 while True:
@@ -418,7 +616,10 @@ while True:
             
             if mapa_caracteristicas[y][x].startswith("texto"):
                 leer()
-
+                
+            elif mapa_caracteristicas[y][x].startswith("npc"):
+                mostrar_conversacion()
+                
             elif mapa_caracteristicas[y][x].startswith("interaccion"):
                 print("Tu personaje esta pensando algo, presiona ENTER para escucharlo")
                 time.sleep(.1)
@@ -436,7 +637,7 @@ while True:
             mapa_colores [y][x] = color_anterior
             mapa_fondo [y][x] = fondo_anterior
             
-            y, x = movimiento(y, x, accion)
+            y, x = movimiento(y, x, accion, alto-2, ancho-2)
             
             anterior = mapa[y][x]
             fondo_anterior = mapa_fondo[y][x]
@@ -492,11 +693,16 @@ while True:
         
         elif accion == "c":
             color = seleccionar_color()
+        
+        elif accion == "p":
+            personaje = crear_personaje()
             
         elif accion == "q":
             mapa[y][x] = anterior
             y = punto_inicio[0]
             x = punto_inicio[1]
+            material = personaje[0]
+            color = personaje[1]
             prueba = True
             
         elif accion == "t":
@@ -516,8 +722,11 @@ while True:
         
     time.sleep(.1)
     os.system("cls")
+    
     if not prueba:
         print(f"El material que esta usando tiene tipo {tipo}\n")
         print(f"El tipo de esta casilla es {mapa_caracteristicas[y][x]}")
+    
     impresion(mapa)
+
 os.system("cls")
