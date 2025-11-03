@@ -1,11 +1,9 @@
-from colorama import Fore, Style, Back
-import keyboard
+azul = [21, 2]
 
-azul = [1, 2, 3, 4]
+colores = {"verde" : azul}
 
-def azuleando(lista):
-    lista[0] = 10
-    print(lista[0])
-    
-azuleando(azul)
-print(azul[0])
+azul = [0, 0]
+colores["rojo"] = azul
+
+
+print(colores)

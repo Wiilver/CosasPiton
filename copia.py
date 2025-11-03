@@ -2,12 +2,12 @@ import keyboard, time, os
 from colorama import Fore, Back
 
 #Falta que enemigos, debes de hacerlo mejor, con cls, inputs, sleeps y tal
+#Hacer que la cara vacia se quede vacia
 
 #Variables
 
 personaje = [" O ", 3]
 
-cara = []
 cara_vacia = []
 
 mapa = []
@@ -57,21 +57,21 @@ inicio = 0
 prueba = False
 
 
-def crear_expresion_npc():
-    #Nombrarlo
+def crear_expresion_npc(cara):
+    os.system("cls")
+    input("Crearemos una expresion para mostrar en una conversacion...\n")
     while True:
-        nombre_npc = input("Primero que nada, introduzca el nombre de su NPC : ")
+        nombre_npc = input("Primero que nada, introduzca el nombre de su expresion : ")
         if not nombre_npc:
             print("Necesita tener un nombre, por favor intentelo de nuevo\n")
         else:
             break
-    print("Define como se ve el NPC al hablar con él")
-    npcs_caras[nombre_npc] = cara_npc(material)
-            
-def cara_npc(material):
+    return cara_npc(material, cara), nombre_npc
+    
+def cara_npc(material, cara):
     y = 3
     x = 3
-    cara = cara_vacia
+    anterior = "   "
     while True:
         accion = keyboard.read_key().lower()
         if moverse.__contains__(accion):
@@ -94,19 +94,25 @@ def cara_npc(material):
             material = seleccionar_material(materiales)
             
         elif accion == "esc":
+            time.sleep(.1)
+            os.system("cls")
+            input("...")
             while True:
                 opcion = input("Seguro que así quiere que se vea el npc? Esta configuracion no se podra cambiar (S/N) : ").upper().strip()
                 if opcion == "S":
                     return cara
                 elif opcion != "N":
-                    print("Solo se admite S o N como respuesta, por favor, vuelve a intentarlo")
+                    print("\nSolo se admite S o N como respuesta, por favor, vuelve a intentarlo\n")
                 else:
                     break
+        
         time.sleep(.1)
         os.system("cls")
+        
         impresion_cara(cara)
     
 def crear_personaje():
+    input("Crearemos un personaje para el usuario\n")
     while True:
         input("...")
         print("Considere que solo pueden usarse 1 o 3 caracteres, los espacios cuentan")
@@ -250,6 +256,7 @@ def seleccionar_material(materiales):
         return material
 
 def hacer_cara():
+    cara_vacia.clear()
     for i in range (0,7):
         cara_vacia.append([])
         for j in range (0,7):
@@ -262,6 +269,7 @@ def hacer_cara():
     cara_vacia[6][0] = " ╚═"
     cara_vacia[0][6] = "═╗ "
     cara_vacia[6][6] = "═╝ "
+    return cara_vacia
     
 def hacer_mapa(mapa, alto , ancho):
     for i in range (0, alto):
@@ -284,16 +292,10 @@ def hacer_mapa(mapa, alto , ancho):
     mapa[alto-1][ancho-1] = "═╝ "
 
 def impresion_cara(cara):
-    y = 0
     for i in cara:
-        x = 0
         for j in i:
             print(j, end="")
-            x += 1
         print()
-        y += 1
-    y= 0
-    x = 0
 
 def impresion(mapa):
     y = 0
@@ -373,7 +375,7 @@ def comandos():
     input("Presione ENTER para salir...")
     
 def nuevo_material():
-    input("Presione ENTER para iniciar...")
+    input("Haremos un nuevo material...\n")
     while True:
         nuevo = input("Introduzca el material que quiera agregar al sistema\n"
                   "Debe de tener en cuenta que necesita tener 3 o 1 caracter de largo\n"
@@ -390,20 +392,25 @@ def nuevo_material():
     return nuevo
 
 def nueva_conversacion():
+    os.system("cls")
+    input("Crearemos una conversacion...\n")
     while True:
-        nombre = input("Primero que nada, pongale un nombre a la conversacion : ")
+        nombre = input("Por favor, pongale un nombre a la conversacion : ")
         if not nombre:
             print("Hermano, pon algo minimo")
         else:
             break
+    print()
     conversacion = []
     contador = 1
-    for i in npcs_caras.keys():
-        print(f"{contador}.- {i}")
-        contador += 1
     while True:
+        for i in npcs_caras.keys():
+            print(f"{contador}.- {i}")
+            contador += 1
+        contador = 1
         try:
             escoger_cara = input("Esta es una lista de las expresiones que has creado, escoge cual quieras usar : ")
+            print()
             if npcs_caras.keys().__contains__(escoger_cara):
                 for i in textos.keys():
                     print(f"{contador}.- {i}")
@@ -412,6 +419,7 @@ def nueva_conversacion():
                     try:
                         
                         escoger = input("Esta es una lista de los textos que has creado, escoge cual quieras usar : ")
+                        print()
                         if not textos.keys().__contains__(escoger):
                             print("Respondiste con una clave que no existe, por favor, intentalo de nuevo")
                         elif not escoger:
@@ -438,9 +446,11 @@ def nueva_conversacion():
             print("Hermano, hubo un error con el dato que me tiraste, por favor, intentalo de nuevo")
         
 def nuevo_texto():
+    os.system("cls")
+    input("Crearemos un texto...\n")
     contenido = []
     while True:
-            nombre = input("Para introducir un texto, primero introduce el titulo del mismo : ")
+            nombre = input("Para crear un texto, primero introduce el titulo del mismo : ")
             if not nombre:
                 print("Debes de poner por lo mismo un caracter, por favor, intentalo de nuevo")
             else:
@@ -452,7 +462,7 @@ def nuevo_texto():
         else:
             contenido.append(letras)
             while True:
-                opcion = input("Quieres agregar otra linea de texto (S/N)?").upper()
+                opcion = input("Quieres agregar otra linea de texto (S/N)? : ").upper()
                 if ((opcion!="S")&(opcion!="N")):
                     print("Por favor, solo se admite S o N como respuesta, escriba bien mi estimado")
                 else:
@@ -519,35 +529,74 @@ def tipo_material():
                         if opcion == 2:
                             return f"texto_{opcion}"
                         else:
-                            f"interaccion_{nombre}"
+                            f"interaccion_{opcion}"
                 else:
                     print("Por favor, utilizar N o A como respuesta")
     
     elif opcion == 3:
+        print()
         if not npcs_caras:
             while True:
-                hacer = input("Parece que aún no tienes ninguna expresion hecha, deseas crear una (S/N) ?").upper().strip()
+                hacer = input("Parece que aún no tienes ninguna expresion hecha, deseas crear una (S/N)? : ").upper().strip()
                 if hacer == "S":
+                    print("\nPrimero crearas la expresion en si, es como al hacer un mapa, pero el único comando activo es M, ENTER y BACKSPACE")
+                    input("Cuando estes contento con como se ve presiona ESC, si entendiste esto, presiona ENTER para continuar...")
+                    print()
                     crear_expresion_npc()
+                    print()
                     break
                 elif hacer == "N":
                     return ""
                 else:
                     print("Solo puedes usar S o N como respuesta, por favor, contesta bien")
         if not textos:
+            os.system("cls")
             while True:
                 hacer = input("Para crear un npc necesitas tener minimo un texto creado, deseas hacer uno nuevo (S/N)? : ").upper().strip()
                 if hacer == "S":
+                    print()
                     nombre, contenido = nuevo_texto()
                     textos[nombre] = contenido
+                    print()
                     break
                 elif hacer == "N":
                     return ""
                 else:
-                    print("Por favor, esfuercese para contestar con S o N solamente e intentelo de nuevo")
-        chat, nombre = nueva_conversacion()
-        conversaciones[nombre] = chat
-        return f"npc_{nombre}"
+                    print("\nPor favor, esfuercese para contestar con S o N solamente e intentelo de nuevo\n")
+        if not conversaciones:
+            os.system("cls")
+            while True:
+                hacer = input("Para definir un npc es necesario que tengas una conversacion creada, deseas hacer una (S/N)? : ").upper().strip()
+                if hacer == "S":
+                    chat, nombre = nueva_conversacion()
+                    conversaciones[nombre] = chat
+                    return f"npc_{nombre}"
+                elif hacer == "N":
+                    break
+                else:
+                    print("\nPor favor, esfuercese para contestar con S o N solamente e intentelo de nuevo\n")
+        else:
+            os.system("cls")
+            while True:
+                hacer = input("Parece que ya tiene alguna conversacion, desea usar una antigua o crear una nueva(N/A)? : ").upper().strip()
+                if hacer == "N":
+                    chat, nombre = nueva_conversacion()
+                    conversaciones[nombre] = chat
+                    return f"npc_{nombre}"
+                elif hacer == "A":
+                    while True:
+                        os.system("cls")
+                        contador = 1
+                        for i in conversaciones.keys():
+                            print(f"{contador}.- {i}")
+                            contador += 1
+                        print()
+                        hacer = input("Esta es una lista de las conversaciones que tienes creadas, escribe el nomrbe de la que quieras usar : ")
+                        if conversaciones.keys().__contains__(hacer):
+                            return f"npc_{hacer}"
+                        else:
+                            print("Parece que lo que introdujiste no concuerda con el nombre de ninguna conversacion, por favor, intentalo nuevamente")
+                    
     elif opcion == 4:
         return "enemigo"
     elif opcion == 5:
@@ -556,15 +605,17 @@ def tipo_material():
         return "inicio"
     
 def mostrar_conversacion():
+    input(...)
     clave = mapa_caracteristicas[y][x].split("_")[1]
     largo = len(conversaciones[clave])
     for i in range(0, largo):
+        print (conversaciones[clave][i][0])
         for j in npcs_caras[conversaciones[clave][i][0]]:
             for k in j:
                 print(k, end="")
             print()
-        for j in textos[conversaciones[clave][i][1]]:
-            input(f"{j}\n") 
+        for k in textos[conversaciones[clave][i][1]]:
+            input(f"{k}\n") 
 
 def leer():
     clave = mapa_caracteristicas[y][x].split("_")[1]
@@ -572,7 +623,6 @@ def leer():
     for i in textos[clave]:
         input(f"{i}\n")
 
-        
 #Empieza la cosa
 while True:
     try:
@@ -594,7 +644,9 @@ hacer_cara()
 impresion(mapa)
 
 while True:
+    print(cara_vacia)
     textos.update()
+    print(npcs_caras)
     print(textos)
     accion = keyboard.read_key().lower()
     
@@ -704,7 +756,19 @@ while True:
             material = personaje[0]
             color = personaje[1]
             prueba = True
-            
+        
+        elif accion == "r":
+            while True:
+                respuesta = input("Quiere crear una nueva expresion para un personaje (S/N)? : ").upper().strip()
+                if respuesta == "S":
+                    lista = crear_expresion_npc()
+                    npcs_caras[lista[1]] = lista[0]
+                    break
+                elif respuesta == "N":
+                    break
+                else:
+                    print("Solo podemos leer S o N, intente contestar de esa manera")
+                    
         elif accion == "t":
             tipo = tipo_material()
             if tipo == "inicio":
