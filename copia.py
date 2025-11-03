@@ -57,7 +57,7 @@ inicio = 0
 prueba = False
 
 
-def crear_expresion_npc(cara):
+def crear_expresion_npc():
     os.system("cls")
     input("Crearemos una expresion para mostrar en una conversacion...\n")
     while True:
@@ -66,7 +66,9 @@ def crear_expresion_npc(cara):
             print("Necesita tener un nombre, por favor intentelo de nuevo\n")
         else:
             break
-    return cara_npc(material, cara), nombre_npc
+    cara = hacer_cara()
+    cara = cara_npc(material, cara)
+    npcs_caras[nombre_npc] = cara
     
 def cara_npc(material, cara):
     y = 3
@@ -256,20 +258,21 @@ def seleccionar_material(materiales):
         return material
 
 def hacer_cara():
-    cara_vacia.clear()
+    lista = []
+    lista.clear()
     for i in range (0,7):
-        cara_vacia.append([])
+        lista.append([])
         for j in range (0,7):
-            cara_vacia[i].append("   ")
+            lista[i].append("   ")
             if ((i == 0)|(i == 6)):
-                cara_vacia[i][j] = "═══"
+                lista[i][j] = "═══"
             if ((j == 0)|(j == 6)):
-                cara_vacia[i][j] = " ║ "
-    cara_vacia[0][0] = " ╔═"
-    cara_vacia[6][0] = " ╚═"
-    cara_vacia[0][6] = "═╗ "
-    cara_vacia[6][6] = "═╝ "
-    return cara_vacia
+                lista[i][j] = " ║ "
+    lista[0][0] = " ╔═"
+    lista[6][0] = " ╚═"
+    lista[0][6] = "═╗ "
+    lista[6][6] = "═╝ "
+    return lista
     
 def hacer_mapa(mapa, alto , ancho):
     for i in range (0, alto):
@@ -644,10 +647,7 @@ hacer_cara()
 impresion(mapa)
 
 while True:
-    print(cara_vacia)
     textos.update()
-    print(npcs_caras)
-    print(textos)
     accion = keyboard.read_key().lower()
     
     if prueba:
@@ -761,8 +761,7 @@ while True:
             while True:
                 respuesta = input("Quiere crear una nueva expresion para un personaje (S/N)? : ").upper().strip()
                 if respuesta == "S":
-                    lista = crear_expresion_npc()
-                    npcs_caras[lista[1]] = lista[0]
+                    crear_expresion_npc()
                     break
                 elif respuesta == "N":
                     break
