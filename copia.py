@@ -1,14 +1,20 @@
-import keyboard, time, os
+import keyboard, time, os, json
 from colorama import Fore, Back
 
-#Falta que enemigos, debes de hacerlo mejor, con cls, inputs, sleeps y tal
-#Hacer que la cara vacia se quede vacia
+#Falta poder hacer un documento con personaje, mapa, mapa_fondo, mapa_colores, mapa_caracteristicas, del_usuario, npc_caras, textos, conversaciones
+#Falta hacer todo el pedo de los json, falta hacer que se pueda editar un escenario despues de haberlo creado
+#Seria buena idea pasar el archivo principal a Json para definir nombre y la pantalla de inicio
+#Falta que hagas un modo para jugar como tal
 
 #Variables
 
-personaje = [" O ", 3]
+alto, ancho, y, x = 0
 
-cara_vacia = []
+juegos = []
+
+malos_caracteres = ["'", '"', "?", "¿", " ", "|", "/", "\\", "<", ">", "*", ":", ".", ","]
+
+personaje = [" O ", 3]
 
 mapa = []
 mapa_fondo= []
@@ -483,7 +489,7 @@ def tipo_material():
                     "1.- Pared\n"
                     "2.- Texto\n"
                     "3.- Npc\n"
-                    "4.- Enemigo\n"
+                    "4.- Conectar pantalla\n"
                     "5.- Nulo\n"
                     "6.- Punto de inicio\n"
                     "7.- Interaccion\n"
@@ -601,9 +607,28 @@ def tipo_material():
                             print("Parece que lo que introdujiste no concuerda con el nombre de ninguna conversacion, por favor, intentalo nuevamente")
                     
     elif opcion == 4:
-        return "enemigo"
+        archivo = open(f"juego_{juego}", "r")
+        
+        if not "mapa" in archivo.read():
+            print("Hermano, no tienes pantallas creadas de momento")
+            return ""
+        
+        else:
+            texto = archivo.read().split(" ")
+            archivo.close()
+            while True:
+                os.system("cls")
+                for i in range(0, len(texto)):
+                    texto[i] = texto[i].strip("\n")
+                respuesta = input("Estos son las otras pantallas que tienes creadas, introduce el nombre de la que quieras usar : ")
+                if not respuesta in texto:
+                    print("La respuesta no coincide con ninguna pantalla, por favor, intentalo nuevamente")
+                else:
+                    return f"conector_{respuesta}"
+
     elif opcion == 5:
         return ""
+    
     elif opcion == 6:
         return "inicio"
     
@@ -627,169 +652,268 @@ def leer():
         input(f"{i}\n")
 
 #Empieza la cosa
-while True:
-    try:
-        alto = int(input("Escoja lo alto de su lienzo : ")) + 2
-        ancho = int(input("Escoja lo ancho de su lienzo: ")) + 2
-        break
-    except:
-        print("Hermano, solo se admiten numeros, por favor intentalo nuevamente")
-
-input("Presione ENTER para continuar")
-
-y = alto//2
-x = ancho//2
-punto_inicio = [y,x]
-
-hacer_mapa(mapa, alto, ancho)
-hacer_cara()
-
-impresion(mapa)
-
-while True:
-    textos.update()
-    accion = keyboard.read_key().lower()
-    
-    if prueba:
-        if moverse.__contains__(accion):
-            mapa[y][x] = anterior
-            mapa_colores [y][x] = color_anterior
-            mapa_fondo [y][x] = fondo_anterior
-            
-            y, x = movimiento_prueba(y, x, accion)
-            
-            anterior = mapa[y][x]
-            fondo_anterior = mapa_fondo[y][x]
-            color_anterior = mapa_colores[y][x]
-            
-            mapa[y][x] = material
-            mapa_fondo [y][x] = fondo
-            mapa_colores [y][x] = color
-            
-            if mapa_caracteristicas[y][x].startswith("texto"):
-                leer()
-                
-            elif mapa_caracteristicas[y][x].startswith("npc"):
-                mostrar_conversacion()
-                
-            elif mapa_caracteristicas[y][x].startswith("interaccion"):
-                print("Tu personaje esta pensando algo, presiona ENTER para escucharlo")
-                time.sleep(.1)
-                pensar = keyboard.read_key()
-                if pensar == "enter":
-                    leer()
-                    
-            
-        elif accion == "q":
-            prueba = False
-            
-    else:
-        if moverse.__contains__(accion):
-            mapa[y][x] = anterior
-            mapa_colores [y][x] = color_anterior
-            mapa_fondo [y][x] = fondo_anterior
-            
-            y, x = movimiento(y, x, accion, alto-2, ancho-2)
-            
-            anterior = mapa[y][x]
-            fondo_anterior = mapa_fondo[y][x]
-            color_anterior = mapa_colores[y][x]
-            
-            mapa[y][x] = material
-            mapa_fondo [y][x] = fondo
-            mapa_colores [y][x] = color        
-        
-        elif accion == "enter":
-            anterior = material
-            mapa[y][x] = material
-            
-            color_anterior = color
-            mapa_colores [y][x] = color
-            
-            fondo_anterior = fondo
-            mapa_fondo [y][x] = fondo
-            
-            if tipo == "inicio":
-                if inicio == 1:
-                    while True:
-                        opcion = input("Parece que ya tienes un punto de inicio registrado, ¿quieres borrar el anterior y guardar este (S/N)? : ").upper()
-                        if opcion == "S":
-                            mapa_caracteristicas [punto_inicio[0]][punto_inicio[1]] = ""
-                            mapa_caracteristicas [y][x] = "inicio"
-                            
-                            punto_inicio[0] = y
-                            punto_inicio[1] = x
-                            break
-                        elif opcion == "N":
-                            break
-                        else:
-                            print("Hubo un error camarada, solo se admiten S o N como respuesta, por favor, intentalo nuevamente")
-            else:
-                mapa_caracteristicas[y][x] = tipo
-            
-        elif accion == "backspace":
-            anterior = "   "
-            mapa[y][x] = "   "
-            mapa_colores[y][x] = 3
-            mapa_fondo[y][x] = 6
-            mapa_caracteristicas [y][x] = ""
-            
-        elif ((accion == "'")|(accion == "¿")):
-            comandos()
-        
-        elif accion == "m":
-            material = seleccionar_material(materiales)
-        
-        elif accion == "n":
-            del_usuario.append(nuevo_material())
-        
-        elif accion == "c":
-            color = seleccionar_color()
-        
-        elif accion == "p":
-            personaje = crear_personaje()
-            
-        elif accion == "q":
-            mapa[y][x] = anterior
-            y = punto_inicio[0]
-            x = punto_inicio[1]
-            material = personaje[0]
-            color = personaje[1]
-            prueba = True
-        
-        elif accion == "r":
-            while True:
-                respuesta = input("Quiere crear una nueva expresion para un personaje (S/N)? : ").upper().strip()
-                if respuesta == "S":
-                    crear_expresion_npc()
-                    break
-                elif respuesta == "N":
-                    break
-                else:
-                    print("Solo podemos leer S o N, intente contestar de esa manera")
-                    
-        elif accion == "t":
-            tipo = tipo_material()
-            if tipo == "inicio":
-                inicio = 1
-        
-        elif accion == "f":
-            fondo = seleccionar_color()
-            
-        elif accion == "esc":
+def crear_pantalla():
+    while True:
+        try:
+            alto = int(input("Escoja lo alto de su lienzo : ")) + 2
+            ancho = int(input("Escoja lo ancho de su lienzo: ")) + 2
             break
-        
-        else:
-            print("No se reconocio el comando, presione cualquier tecla para continuar")
-            keyboard.read_key()
-        
-    time.sleep(.1)
-    os.system("cls")
-    
-    if not prueba:
-        print(f"El material que esta usando tiene tipo {tipo}\n")
-        print(f"El tipo de esta casilla es {mapa_caracteristicas[y][x]}")
-    
+        except:
+            print("Hermano, solo se admiten numeros, por favor intentalo nuevamente")
+
+    input("Presione ENTER para continuar")
+
+    y = alto//2
+    x = ancho//2
+    punto_inicio = [y,x]
+
+    hacer_mapa(mapa, alto, ancho)
+    hacer_cara()
+
     impresion(mapa)
 
-os.system("cls")
+    while True:
+        textos.update()
+        accion = keyboard.read_key().lower()
+        
+        if prueba:
+            if moverse.__contains__(accion):
+                mapa[y][x] = anterior
+                mapa_colores [y][x] = color_anterior
+                mapa_fondo [y][x] = fondo_anterior
+                
+                y, x = movimiento_prueba(y, x, accion)
+                
+                anterior = mapa[y][x]
+                fondo_anterior = mapa_fondo[y][x]
+                color_anterior = mapa_colores[y][x]
+                
+                mapa[y][x] = material
+                mapa_fondo [y][x] = fondo
+                mapa_colores [y][x] = color
+                
+                if mapa_caracteristicas[y][x].startswith("texto"):
+                    leer()
+                    
+                elif mapa_caracteristicas[y][x].startswith("npc"):
+                    mostrar_conversacion()
+                    
+                elif mapa_caracteristicas[y][x].startswith("interaccion"):
+                    print("Tu personaje esta pensando algo, presiona ENTER para escucharlo")
+                    time.sleep(.1)
+                    pensar = keyboard.read_key()
+                    if pensar == "enter":
+                        leer()
+                        
+                
+            elif accion == "q":
+                prueba = False
+                
+        else:
+            if moverse.__contains__(accion):
+                mapa[y][x] = anterior
+                mapa_colores [y][x] = color_anterior
+                mapa_fondo [y][x] = fondo_anterior
+                
+                y, x = movimiento(y, x, accion, alto-2, ancho-2)
+                
+                anterior = mapa[y][x]
+                fondo_anterior = mapa_fondo[y][x]
+                color_anterior = mapa_colores[y][x]
+                
+                mapa[y][x] = material
+                mapa_fondo [y][x] = fondo
+                mapa_colores [y][x] = color        
+            
+            elif accion == "enter":
+                anterior = material
+                mapa[y][x] = material
+                
+                color_anterior = color
+                mapa_colores [y][x] = color
+                
+                fondo_anterior = fondo
+                mapa_fondo [y][x] = fondo
+                
+                if tipo == "inicio":
+                    if inicio == 1:
+                        while True:
+                            opcion = input("Parece que ya tienes un punto de inicio registrado, ¿quieres borrar el anterior y guardar este (S/N)? : ").upper()
+                            if opcion == "S":
+                                mapa_caracteristicas [punto_inicio[0]][punto_inicio[1]] = ""
+                                mapa_caracteristicas [y][x] = "inicio"
+                                
+                                punto_inicio[0] = y
+                                punto_inicio[1] = x
+                                break
+                            elif opcion == "N":
+                                break
+                            else:
+                                print("Hubo un error camarada, solo se admiten S o N como respuesta, por favor, intentalo nuevamente")
+                else:
+                    mapa_caracteristicas[y][x] = tipo
+                
+            elif accion == "backspace":
+                anterior = "   "
+                mapa[y][x] = "   "
+                mapa_colores[y][x] = 3
+                mapa_fondo[y][x] = 6
+                mapa_caracteristicas [y][x] = ""
+                
+            elif ((accion == "'")|(accion == "¿")):
+                comandos()
+            
+            elif accion == "m":
+                material = seleccionar_material(materiales)
+            
+            elif accion == "n":
+                del_usuario.append(nuevo_material())
+            
+            elif accion == "c":
+                color = seleccionar_color()
+            
+            elif accion == "p":
+                personaje = crear_personaje()
+                
+            elif accion == "q":
+                mapa[y][x] = anterior
+                y = punto_inicio[0]
+                x = punto_inicio[1]
+                material = personaje[0]
+                color = personaje[1]
+                prueba = True
+            
+            elif accion == "r":
+                while True:
+                    respuesta = input("Quiere crear una nueva expresion para un personaje (S/N)? : ").upper().strip()
+                    if respuesta == "S":
+                        crear_expresion_npc()
+                        break
+                    elif respuesta == "N":
+                        break
+                    else:
+                        print("Solo podemos leer S o N, intente contestar de esa manera")
+                        
+            elif accion == "t":
+                tipo = tipo_material()
+                if tipo == "inicio":
+                    inicio = 1
+            
+            elif accion == "f":
+                fondo = seleccionar_color()
+                
+            elif accion == "esc":
+                while True:
+                    salir = input("Seguro que quieres dejar la pantalla así como esta? Esto no podra ser cambiado posteriormente (S/N) : ").upper().strip()
+                    if salir == "S":
+                        while True:
+                            mal_nombre = False
+                            titulo = input("Por favor, pongale un nombre a la pantalla : ")
+                            if not titulo:
+                                print("Hermano, por favor llamalo de alguna manera")
+                            else:
+                                while True:
+                                    for i in malos_caracteres:
+                                        if i in titulo:
+                                            mal_nombre = True
+                                    if mal_nombre:
+                                        print("Parece ser que introdujiste caracteres que no furulan, por favor, intentalo nuevamente")
+                                    else:
+                                        break
+                                break
+                        data = {
+                                "alto": alto,
+                                "ancho": ancho,
+                                "personaje": personaje,
+                                "mapa": mapa,
+                                "colores": mapa_colores,
+                                "fondo": mapa_fondo,
+                                "caracteristicas": mapa_caracteristicas,
+                                "textos": textos,
+                                "caras": npcs_caras,
+                                "conversaciones": conversaciones
+                                }
+
+                        with open(f"mapa_{titulo}.json", "w", encoding="utf-8") as f:
+                            json.dump(data, f, ensure_ascii=False)
+                        break
+                        
+                    elif respuesta == "N":                  
+                        break
+            
+            else:
+                print("No se reconocio el comando, presione cualquier tecla para continuar")
+                keyboard.read_key()
+            
+            if salir == "S":
+                break
+            
+        time.sleep(.1)
+        os.system("cls")
+        
+        if not prueba:
+            print(f"El material que esta usando tiene tipo {tipo}\n")
+            print(f"El tipo de esta casilla es {mapa_caracteristicas[y][x]}")
+        
+        impresion(mapa)
+
+    os.system("cls")
+
+while True:
+    ruta = os.getcwd()
+    archivos = os.listdir(ruta)
+    
+    for i in archivos:
+        if i.startswith("juego"):
+            juegos.append(i)
+    
+    if not juegos:
+        while True:
+            respuesta = input("Parece que no tienes ningún juego de wille, deseas crear uno (S/N)? : ").upper().strip()
+            if respuesta == "S":
+                crear_pantalla()
+                break
+            elif respuesta == "N":
+                break
+            else:
+                print("Hermano, solo te aceptare S o N como respuesta, por favor, intentalo de nuevo")
+    else:
+        while True:
+            respuesta = input("Parece que ya tienes juegos creados, deseas jugar uno antiguo o crear uno nuevo (A/N)? : ").upper().strip()
+            if respuesta == "A":
+                while True:
+                    for i in juegos:
+                        print(i.split("_")[1])
+                    
+                    opcion = input("Esta es una lista de los juegos que ya tienes creados, por favor, introduce el nombre del que quieras jugar : ")
+                    if juegos.__contains__(f"juego_{opcion}"):
+                        import 
+                    else:
+                        print("El nombre que introdujiste no concuerda con ningun juego de los de la lista, por favor, intentalo de nuevo")
+                        os.system("cls")
+            if respuesta == "N":
+                while True:
+                    mal_nombre = False
+                    juego = input("Por favor introduzca un nombre para el juego : ").strip()
+                    if not juego:
+                        print("Hermano, pero ponle algo macho")
+                    else:
+                        for i in malos_caracteres:
+                            if i in juego:
+                                mal_nombre = True
+                        if mal_nombre:
+                            print("Hermano tienes caracteres no permitidos en el nombre, por favor, intentalo de nuevo")
+                        else:
+                            archivo = open(f"juego_{juego}", "x")
+                            archivo.close()
+                            
+                            input("Ahora, empezaremos a crear las pantallas del juego, presiona ENTER para continuar...")
+                            crear_pantalla()
+                            while True:
+                                respuesta = input("Desea agregar una nueva pantalla (S/N)? : ").upper().strip()
+                                if respuesta == "S":
+                                    crear_pantalla()
+                                elif respuesta == "N":
+                                    break
+                                else:
+                                    print("Hermano, solo se toman S o N como respuestas validas, por favor, intentalo de nuevo")

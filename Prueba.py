@@ -1,9 +1,20 @@
-azul = [21, 2]
+import os
+"""archivo = open("Saludos_crack.py", "a")
+archivo.write("ajolote = 'ajolotea'\n")
+archivo.close()
 
-colores = {"verde" : azul}
+with open("Saludos_crack.py", "r") as archivo:
+    saludo = archivo.read()
 
-azul = [0, 0]
-colores["rojo"] = azul
+    for i in saludo:
+        print(i)
+    
+    archivo.close()
 
+import Saludos_crack
 
-print(colores)
+print(Saludos_crack.ajolote)"""
+
+a = "asa"
+
+import 
