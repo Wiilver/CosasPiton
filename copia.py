@@ -1,14 +1,18 @@
 import keyboard, time, os, json
 from colorama import Fore, Back
 
+#Ya probamos a crear textos pero solo devuelve interacciones, ya hay materiales nuevos, personaje, textos, conversaciones, caras, debes de checar igual
 #Falta poder hacer un documento con personaje, mapa, mapa_fondo, mapa_colores, mapa_caracteristicas, del_usuario, npc_caras, textos, conversaciones
 #Falta hacer todo el pedo de los json, falta hacer que se pueda editar un escenario despues de haberlo creado
-#Seria buena idea pasar el archivo principal a Json para definir nombre y la pantalla de inicio
+#Falta hacer que el archivo principal le designes la pantalla de inicio
 #Falta que hagas un modo para jugar como tal
 
 #Variables
 
-alto, ancho, y, x = 0
+alto= 0
+ancho = 0
+y = 0
+x = 0
 
 juegos = []
 
@@ -60,21 +64,26 @@ color_anterior = 3
 inicio = 0
 
 
-prueba = False
-
-
-def crear_expresion_npc():
+def crear_expresion_npc(npcs_caras):
     os.system("cls")
     input("Crearemos una expresion para mostrar en una conversacion...\n")
     while True:
-        nombre_npc = input("Primero que nada, introduzca el nombre de su expresion : ")
-        if not nombre_npc:
+        nombre_expresion = input("Primero que nada, introduzca el nombre de su expresion : ")
+        if not nombre_expresion:
             print("Necesita tener un nombre, por favor intentelo de nuevo\n")
         else:
             break
     cara = hacer_cara()
     cara = cara_npc(material, cara)
-    npcs_caras[nombre_npc] = cara
+    npcs_caras[nombre_expresion] = cara
+    
+    with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
+        datos = json.load(archivo)
+        
+    datos["caras"] = npcs_caras
+    
+    with open(f"juego_{titulo}.json", "w", encoding="utf-8") as archivo:
+        json.dump(datos, archivo, ensure_ascii=False)
     
 def cara_npc(material, cara):
     y = 3
@@ -106,10 +115,10 @@ def cara_npc(material, cara):
             os.system("cls")
             input("...")
             while True:
-                opcion = input("Seguro que así quiere que se vea el npc? Esta configuracion no se podra cambiar (S/N) : ").upper().strip()
-                if opcion == "S":
+                respuesta = input("Seguro que así quiere que se vea el npc? Esta configuracion no se podra cambiar (S/N) : ").upper().strip()
+                if respuesta == "S":
                     return cara
-                elif opcion != "N":
+                elif respuesta != "N":
                     print("\nSolo se admite S o N como respuesta, por favor, vuelve a intentarlo\n")
                 else:
                     break
@@ -144,7 +153,7 @@ def seleccionar_color():
     while True:
         while True:
             try:
-                opcion = int(input("Esta es la lista de colores que puede seleccionar:\n"
+                respuesta = int(input("Esta es la lista de colores que puede seleccionar:\n"
                     "1.- Rojo\n"
                     "2.- Azul\n"
                     "3.- Verde\n"
@@ -157,20 +166,20 @@ def seleccionar_color():
                 break
             except:
                 print("Hubo un error, recuerda que solo puedes ingresar numeros")
-        if ((opcion < 0)|(opcion > 7)):
+        if ((respuesta < 0)|(respuesta > 7)):
             print("Hermano, el numero debe de estar entre el 1 y el 8, intentalo nuevamente")
         else:
             break
     input("Presione ENTER para salir...")
     
-    return opcion
+    return respuesta
 
 def seleccionar_material(materiales):
     input("Presione ENTER para continuar...")
     while True:
         while True:
             try:
-                indice = int(input("Estas son las categorias de materiales disponibles \n"
+                respuesta = int(input("Estas son las categorias de materiales disponibles \n"
                                 "1.- Lineas\n"
                                 "2.- Texturas \n"
                                 "3.- Bloques\n"
@@ -180,11 +189,11 @@ def seleccionar_material(materiales):
                 break
             except:
                 print("Hermano, solo puedes ingresar numeros, por favor intentalo de nuevo")
-        if ((indice < 0)|(indice > 4)):
+        if ((respuesta < 0)|(respuesta > 4)):
             print("Hermano, el numero debe de estar entre 1 y 5, por favor intentalo nuevamente")
         else:
             break
-    if indice == 4:
+    if respuesta == 4:
         if len(materiales[4]) == 0:
             print("Hermano, esta lista esta vacia de momento")
         else:
@@ -197,69 +206,69 @@ def seleccionar_material(materiales):
             while True:
                 while True:
                     try:
-                        indice = int(input("Material : "))-1
+                        respuesta = int(input("Material : "))-1
                         break
                     except:
                         print("Hermano, solo puedes ingresar numeros, por favor intentalo nuevamente")
-                if ((indice < 0)|(indice > len(materiales[4]))):
+                if ((respuesta < 0)|(respuesta > len(materiales[4]))):
                     print(f"Hermano, el indice debe de estar entre 1 y {len(materiales[4])}, por favor intentalo nuevamente")
                 else:
                     break
-            material = materiales[4][indice]
+            material = materiales[4][respuesta]
             input("Presione ENTER para salir...")
             return material
-    elif indice == 0:
+    elif respuesta == 0:
         while True:
             while True:
                 try:
-                    indice = int(input("Las lineas tienen dos subcategorias:\n"
+                    respuesta = int(input("Las lineas tienen dos subcategorias:\n"
                                     "1.- Lineas simples\n"
                                     "2.- Lineas dobles\n"
                                     "Favor de seleccionar que opcion desea : "))-1
                     break
                 except:
                     print("Hermano, solamente se admiten numeros, por favor intentalo nuevamente")
-            if ((indice < 0)|(indice > 1)):
+            if ((respuesta < 0)|(respuesta > 1)):
                 print("Hermano, solo se admiten los valores 1 y 2, por favor intentalo nuevamente")
             else:
                 break
         contador = 1
-        for i in materiales[0][indice]:
+        for i in materiales[0][respuesta]:
             print(f"{contador}.- {i}")
             contador +=1
         print()
         while True:
             while True:
                 try:
-                    indice2 = int(input("Material : "))-1
+                    respuesta_2 = int(input("Material : "))-1
                     break
                 except:
                     print("Hermano, solo se admiten numeros, por favor intentalo nuevamente")
-            if ((indice2 < 0)|(indice2 > len(materiales[0][indice]))):
-                print(f"Hermano, el indice debe de estar entre 1 y {len(materiales[0][indice])}, por favor intentalo nuevamente")
+            if ((respuesta_2 < 0)|(respuesta_2 > len(materiales[0][respuesta_2]))):
+                print(f"Hermano, el indice debe de estar entre 1 y {len(materiales[0][respuesta])}, por favor intentalo nuevamente")
             else:
                 break
-        material = materiales[0][indice][indice2]
+        material = materiales[0][respuesta][respuesta_2]
         input("Presione ENTER para salir...")
         return material
     else:
         contador = 1
-        for i in materiales[indice]:
+        for i in materiales[respuesta]:
             print(f"{contador}.- {i}")
             contador += 1
         print()
         while True:
             while True:
                 try:
-                    indice2 = int(input("Material : "))-1
+                    respuesta_2 = int(input("Material : "))-1
                     break
                 except:
                     print("Hermano, solo se admiten numeros, por favor intentalo nuevamente")
-            if ((indice2 < 0)|(indice2 > len(materiales[indice]))):
-                print(f"Hermano, el indice debe de estar entre 1 y {len(materiales[indice])}, por favor, intentalo de nuevo")
+            if ((respuesta_2 < 0)|(respuesta_2 > len(materiales[respuesta]))):
+                print(f"Hermano, el indice debe de estar entre 1 y {len(materiales[respuesta])}, por favor, intentalo de nuevo")
             else:
                 break
-        material = materiales[indice][indice2]
+        material = materiales[respuesta][respuesta_2]
         input("Presione ENTER para salir...")
         return material
 
@@ -280,7 +289,7 @@ def hacer_cara():
     lista[6][6] = "═╝ "
     return lista
     
-def hacer_mapa(mapa, alto , ancho):
+def hacer_mapa(mapa, mapa_colores, mapa_caracteristicas, mapa_fondo, alto , ancho):
     for i in range (0, alto):
         mapa.append([])
         mapa_caracteristicas.append([])
@@ -299,6 +308,7 @@ def hacer_mapa(mapa, alto , ancho):
     mapa[alto-1][0] = " ╚═"
     mapa[0][ancho-1] = "═╗ "
     mapa[alto-1][ancho-1] = "═╝ "
+    return mapa, mapa_fondo, mapa_colores, mapa_caracteristicas
 
 def impresion_cara(cara):
     for i in cara:
@@ -306,7 +316,7 @@ def impresion_cara(cara):
             print(j, end="")
         print()
 
-def impresion(mapa):
+def impresion(mapa, mapa_fondo, mapa_colores):
     y = 0
     for i in mapa:
         x = 0
@@ -319,7 +329,7 @@ def impresion(mapa):
     y= 0
     x = 0
 
-def movimiento(y, x, accion, altura, gordeza):
+def movimiento(y, x, accion, altura, anchura):
     if ((accion == "flecha arriba") | (accion == "w")):
         if y > 1:
             y -= 1
@@ -327,14 +337,14 @@ def movimiento(y, x, accion, altura, gordeza):
         if y < altura:
             y += 1
     elif ((accion == "flecha derecha") | (accion == "d")):
-        if x < gordeza:
+        if x < anchura:
             x += 1
     elif ((accion == "flecha izquierda") | (accion == "a")):
         if x > 1:
             x -= 1
     return y, x
 
-def movimiento_prueba( y, x, accion):
+def movimiento_prueba(y, x, altura, anchura, accion, mapa_caracteristicas):
     if ((accion == "flecha arriba") | (accion == "w")):
         if y > 1:
             if mapa_caracteristicas[y-1][x] == "pared":
@@ -344,7 +354,7 @@ def movimiento_prueba( y, x, accion):
             else:
                 y -= 1
     elif ((accion == "flecha abajo") | (accion == "s")):
-        if y < alto-2:
+        if y < altura-2:
             if mapa_caracteristicas[y+1][x] == "pared":
                 print("No puedes moverte en esa direccion, hay algo que te detiene")
                 time.sleep(.1)
@@ -352,7 +362,7 @@ def movimiento_prueba( y, x, accion):
             else:
                 y += 1
     elif ((accion == "flecha derecha") | (accion == "d")):
-        if x < ancho-2:
+        if x < anchura-2:
             if mapa_caracteristicas[y][x+1] == "pared":
                 print("No puedes moverte en esa direccion, hay algo que te detiene")
                 time.sleep(.1)
@@ -400,12 +410,12 @@ def nuevo_material():
     input("Presione ENTER para salir...")
     return nuevo
 
-def nueva_conversacion():
+def nueva_conversacion(npcs_caras, textos):
     os.system("cls")
     input("Crearemos una conversacion...\n")
     while True:
-        nombre = input("Por favor, pongale un nombre a la conversacion : ")
-        if not nombre:
+        nombre_conversacion = input("Por favor, pongale un nombre a la conversacion : ")
+        if not nombre_conversacion:
             print("Hermano, pon algo minimo")
         else:
             break
@@ -427,22 +437,22 @@ def nueva_conversacion():
                 while True:
                     try:
                         
-                        escoger = input("Esta es una lista de los textos que has creado, escoge cual quieras usar : ")
+                        escoger_texto = input("Esta es una lista de los textos que has creado, escoge cual quieras usar : ")
                         print()
-                        if not textos.keys().__contains__(escoger):
+                        if not textos.keys().__contains__(escoger_texto):
                             print("Respondiste con una clave que no existe, por favor, intentalo de nuevo")
-                        elif not escoger:
+                        elif not escoger_texto:
                             print("Hermanito, por favor, minimo contesta algo")
                         else:
-                            conversacion.append([escoger_cara, escoger])
+                            conversacion.append([escoger_cara, escoger_texto])
                             while True:
-                                escoger = input("Deseas agregar otra viñeta (S/N) : ").upper().strip()
-                                if ((escoger != "S")&(escoger != "N")):
+                                respuesta = input("Deseas agregar otra viñeta (S/N) : ").upper().strip()
+                                if ((respuesta != "S")&(respuesta != "N")):
                                     print("Hermano, solo se admiten S o N como respuestas, por favor intentalo nuevamente")
                                 else:
                                     break
-                        if escoger == "N":
-                            return conversacion, nombre
+                        if respuesta == "N":
+                            return conversacion, nombre_conversacion
                         else:
                             break
                     except:
@@ -454,38 +464,38 @@ def nueva_conversacion():
         except:
             print("Hermano, hubo un error con el dato que me tiraste, por favor, intentalo de nuevo")
         
-def nuevo_texto():
+def nuevo_texto(textos):
     os.system("cls")
     input("Crearemos un texto...\n")
     contenido = []
     while True:
-            nombre = input("Para crear un texto, primero introduce el titulo del mismo : ")
-            if not nombre:
+            nombre_texto = input("Para crear un texto, primero introduce el titulo del mismo : ")
+            if not nombre_texto:
                 print("Debes de poner por lo mismo un caracter, por favor, intentalo de nuevo")
             else:
                 break
     while True:
-        letras = input("Ahora introduce el texto : ")
-        if not letras:
+        texto = input("Ahora introduce el texto : ")
+        if not texto:
             print("Necesiitas poner algo dentro, por favor, intentalo de nuevo")
         else:
-            contenido.append(letras)
+            contenido.append(texto)
             while True:
-                opcion = input("Quieres agregar otra linea de texto (S/N)? : ").upper()
-                if ((opcion!="S")&(opcion!="N")):
+                respuesta_1= input("Quieres agregar otra linea de texto (S/N)? : ").upper()
+                if ((respuesta_1 != "S")&(respuesta_1 != "N")):
                     print("Por favor, solo se admite S o N como respuesta, escriba bien mi estimado")
                 else:
                     break
-            if opcion == "N":
+            if respuesta_1 == "N":
                 break
-    return nombre, contenido
+    return nombre_texto, contenido, respuesta_1
 
-def tipo_material():
+def tipo_material(conversaciones, npcs_caras, textos):
     print("Presione ENTER para continuar")
     while True:
         while True:
             try:
-                opcion = int(input("Seleccione el tipo de material que quiere usar:\n"
+                respuesta = int(input("Seleccione el tipo de material que quiere usar:\n"
                     "1.- Pared\n"
                     "2.- Texto\n"
                     "3.- Npc\n"
@@ -497,102 +507,159 @@ def tipo_material():
                 break
             except:
                 print("Solo se admiten valores numericos, por favor, intentelo de nuevo")
-        if ((opcion < 1)|(opcion > 7)):
+        if ((respuesta < 1)|(respuesta > 7)):
             print("Los valores deben de ir de 1 a 5, por favor, intentelo de nuevo")
         else:
             break
-    if opcion == 1:
+    
+    if respuesta == 1:
         return "pared"
-    elif ((opcion == 2)|(opcion == 7)):
+    
+    elif ((respuesta == 2)|(respuesta == 7)):
         if not textos:
             while True:
-                crear = input("Parece que no tienes textos hechos, quieres crear uno (S/N)?: ")
-                if crear == "S":
-                    nombre, contenido = nuevo_texto()
-                    textos[nombre] = contenido
-                    if opcion == 2:
-                        return f"texto_{nombre}"
+                respuesta = input("Parece que no tienes textos hechos, quieres crear uno (S/N)?: ").upper().strip()
+                if respuesta == "S":
+                    nombre_texto, contenido, respuesta_1 = nuevo_texto(textos)
+                    textos[nombre_texto] = contenido
+                    
+                    with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
+                        datos = json.load(archivo)
+                    
+                    datos["textos"] = textos
+                    
+                    with open(f"juego_{titulo}.json", "w", encoding="utf-8") as archivo:
+                        json.dump(datos, archivo, ensure_ascii=False)
+                        
+                    if respuesta == 2:
+                        return f"texto_{nombre_texto}"
                     else:
-                        return f"interaccion_{nombre}"
-                elif crear == "N":
+                        return f"interaccion_{nombre_texto}"
+                    
+                elif respuesta_1 == "N":
                     break
                 else:
                     print("Favor de utilizar una S o una N como respuesta")
         else:
             while True:
-                crear = input("Quiere crear un texto nuevo o utilizar uno antiguo (N/A)?: ")
-                if crear == "N":
-                    nombre, contenido = nuevo_texto()
-                    textos[nombre] = contenido
-                    if opcion == 2:
-                        return f"texto_{nombre}"
+                respuesta = input("Quiere crear un texto nuevo o utilizar uno antiguo (N/A)? : ").upper().strip()
+                if respuesta == "N":
+                    nombre_texto, contenido = nuevo_texto(textos)
+                    textos[nombre_texto] = contenido
+                    
+                    with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
+                        datos = json.load(archivo)
+                    
+                    datos["textos"] = textos
+                    
+                    with open(f"juego_{titulo}.json", "w", encoding="utf-8") as archivo:
+                        json.dump(datos, archivo, ensure_ascii=False)
+                        
+                    if respuesta == 2:
+                        return f"texto_{nombre_texto}"
                     else:
-                        f"interaccion_{nombre}"
-                elif crear == "A":
+                        f"interaccion_{nombre_texto}"
+                elif respuesta == "A":
                     print("Esta es una lista de los textos que ya tienes hechos:")
                     contador = 1
                     for i in textos.keys():
                         print(f"{contador}.- {i}")
-                    opcion = input("Seleccione el titulo del texto que quiera reutilizar : ")
-                    if textos.keys().__contains__(opcion):
-                        if opcion == 2:
-                            return f"texto_{opcion}"
+                    respuesta = input("Seleccione el titulo del texto que quiera reutilizar : ")
+                    if textos.keys().__contains__(respuesta):
+                        if respuesta == 2:
+                            return f"texto_{respuesta}"
                         else:
-                            f"interaccion_{opcion}"
+                            f"interaccion_{respuesta}"
                 else:
                     print("Por favor, utilizar N o A como respuesta")
     
-    elif opcion == 3:
+    elif respuesta == 3:
         print()
         if not npcs_caras:
             while True:
-                hacer = input("Parece que aún no tienes ninguna expresion hecha, deseas crear una (S/N)? : ").upper().strip()
-                if hacer == "S":
+                respuesta = input("Parece que aún no tienes ninguna expresion hecha, deseas crear una (S/N)? : ").upper().strip()
+                if respuesta == "S":
                     print("\nPrimero crearas la expresion en si, es como al hacer un mapa, pero el único comando activo es M, ENTER y BACKSPACE")
                     input("Cuando estes contento con como se ve presiona ESC, si entendiste esto, presiona ENTER para continuar...")
                     print()
-                    crear_expresion_npc()
+                    crear_expresion_npc(npcs_caras)
+                    
+                    with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
+                        datos = json.load(archivo)
+                        
+                    datos["caras"] = npcs_caras
+                    
+                    with open(f"juego_{titulo}.json", "w", encoding="utf-8") as archivo:
+                        json.dump(datos, archivo, ensure_ascii=False)
+                    
                     print()
                     break
-                elif hacer == "N":
+                elif respuesta == "N":
                     return ""
                 else:
                     print("Solo puedes usar S o N como respuesta, por favor, contesta bien")
         if not textos:
             os.system("cls")
             while True:
-                hacer = input("Para crear un npc necesitas tener minimo un texto creado, deseas hacer uno nuevo (S/N)? : ").upper().strip()
-                if hacer == "S":
+                respuesta = input("Para crear un npc necesitas tener minimo un texto creado, deseas hacer uno nuevo (S/N)? : ").upper().strip()
+                if respuesta == "S":
                     print()
-                    nombre, contenido = nuevo_texto()
-                    textos[nombre] = contenido
+                    nombre_texto, contenido, respuesta_1 = nuevo_texto(textos)
+                    textos[nombre_texto] = contenido
+                    
+                    with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
+                        datos = json.load(archivo)
+                    
+                    datos["textos"] = textos
+                    
+                    with open(f"juego_{titulo}.json", "w", encoding="utf-8") as archivo:
+                        json.dump(datos, archivo, ensure_ascii=False)
+                    
                     print()
                     break
-                elif hacer == "N":
+                elif respuesta == "N":
                     return ""
                 else:
                     print("\nPor favor, esfuercese para contestar con S o N solamente e intentelo de nuevo\n")
         if not conversaciones:
             os.system("cls")
             while True:
-                hacer = input("Para definir un npc es necesario que tengas una conversacion creada, deseas hacer una (S/N)? : ").upper().strip()
-                if hacer == "S":
-                    chat, nombre = nueva_conversacion()
-                    conversaciones[nombre] = chat
-                    return f"npc_{nombre}"
-                elif hacer == "N":
+                respuesta = input("Para definir un npc es necesario que tengas una conversacion creada, deseas hacer una (S/N)? : ").upper().strip()
+                if respuesta == "S":
+                    contenido, nombre_conversacion = nueva_conversacion(npcs_caras, textos)
+                    conversaciones[nombre_conversacion] = contenido
+                    
+                    with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
+                        datos = json.load(archivo)
+                        
+                    datos["conversaciones"] = conversaciones
+                        
+                    with open(f"juego_{titulo}.json", "w", encoding="utf-8") as archivo:
+                        json.dump(datos, archivo, ensure_ascii=False)
+                    
+                    return f"npc_{nombre_conversacion}"
+                elif respuesta == "N":
                     break
                 else:
                     print("\nPor favor, esfuercese para contestar con S o N solamente e intentelo de nuevo\n")
         else:
             os.system("cls")
             while True:
-                hacer = input("Parece que ya tiene alguna conversacion, desea usar una antigua o crear una nueva(N/A)? : ").upper().strip()
-                if hacer == "N":
-                    chat, nombre = nueva_conversacion()
-                    conversaciones[nombre] = chat
-                    return f"npc_{nombre}"
-                elif hacer == "A":
+                respuesta = input("Parece que ya tiene alguna conversacion, desea usar una antigua o crear una nueva(N/A)? : ").upper().strip()
+                if respuesta == "N":
+                    contenido, nombre_conversacion = nueva_conversacion(npcs_caras, textos)
+                    conversaciones[nombre_conversacion] = contenido
+
+                    with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
+                        datos = json.load(archivo)
+                        
+                    datos["conversaciones"] = conversaciones
+                        
+                    with open(f"juego_{titulo}.json", "w", encoding="utf-8") as archivo:
+                        json.dump(datos, archivo, ensure_ascii=False)
+                    
+                    return f"npc_{nombre_conversacion}"
+                elif respuesta == "A":
                     while True:
                         os.system("cls")
                         contador = 1
@@ -600,59 +667,115 @@ def tipo_material():
                             print(f"{contador}.- {i}")
                             contador += 1
                         print()
-                        hacer = input("Esta es una lista de las conversaciones que tienes creadas, escribe el nomrbe de la que quieras usar : ")
-                        if conversaciones.keys().__contains__(hacer):
-                            return f"npc_{hacer}"
+                        nombre_conversacion = input("Esta es una lista de las conversaciones que tienes creadas, escribe el nomrbe de la que quieras usar : ")
+                        if conversaciones.keys().__contains__(nombre_conversacion):
+                            return f"npc_{nombre_conversacion}"
                         else:
                             print("Parece que lo que introdujiste no concuerda con el nombre de ninguna conversacion, por favor, intentalo nuevamente")
                     
-    elif opcion == 4:
-        archivo = open(f"juego_{juego}", "r")
-        
-        if not "mapa" in archivo.read():
-            print("Hermano, no tienes pantallas creadas de momento")
-            return ""
-        
-        else:
-            texto = archivo.read().split(" ")
-            archivo.close()
-            while True:
-                os.system("cls")
-                for i in range(0, len(texto)):
-                    texto[i] = texto[i].strip("\n")
-                respuesta = input("Estos son las otras pantallas que tienes creadas, introduce el nombre de la que quieras usar : ")
-                if not respuesta in texto:
-                    print("La respuesta no coincide con ninguna pantalla, por favor, intentalo nuevamente")
-                else:
-                    return f"conector_{respuesta}"
+    elif respuesta == 4:
+        with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
+            datos = json.load(archivo)
+            
+            if not "pantallas":
+                print("Hermano, no tienes pantallas creadas de momento")
+                return ""
+            
+            else:
+                pantallas = datos["pantallas"].keys()
+                while True:
+                    os.system("cls")
+                    for i in pantallas:
+                        print(i, "\n")
+                    respuesta = input("Estos son las otras pantallas que tienes creadas, introduce el nombre de la que quieras usar : ")
+                    if not respuesta in pantallas:
+                        print("La respuesta no coincide con ninguna pantalla, por favor, intentalo nuevamente")
+                    else:
+                        return f"conector_{respuesta}"
 
-    elif opcion == 5:
+    elif respuesta == 5:
         return ""
     
-    elif opcion == 6:
+    elif respuesta == 6:
         return "inicio"
     
-def mostrar_conversacion():
+def mostrar_conversacion(mapa_caracteristicas, conversaciones, npcs_caras, textos, y, x):
     input(...)
-    clave = mapa_caracteristicas[y][x].split("_")[1]
-    largo = len(conversaciones[clave])
+    nombre_conversacion = mapa_caracteristicas[y][x].split("_")[1]
+    largo = len(conversaciones[nombre_conversacion])
     for i in range(0, largo):
-        print (conversaciones[clave][i][0])
-        for j in npcs_caras[conversaciones[clave][i][0]]:
+        print (conversaciones[nombre_conversacion][i][0])
+        for j in npcs_caras[conversaciones[nombre_conversacion][i][0]]:
             for k in j:
                 print(k, end="")
             print()
-        for k in textos[conversaciones[clave][i][1]]:
+        for k in textos[conversaciones[nombre_conversacion][i][1]]:
             input(f"{k}\n") 
 
-def leer():
-    clave = mapa_caracteristicas[y][x].split("_")[1]
+def leer(mapa_caracteristicas, y, x):
+    nombre_texto = mapa_caracteristicas[y][x].split("_")[1]
     input("...")
-    for i in textos[clave]:
+    for i in textos[nombre_texto]:
         input(f"{i}\n")
 
 #Empieza la cosa
 def crear_pantalla():
+    with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
+        datos = json.load(archivo)
+    
+    personaje = datos["personaje"]
+    conversaciones = datos["conversaciones"]
+    npcs_caras = datos["caras"]
+    textos = datos["textos"]
+    pantallas = datos["pantallas"]
+    del_usuario = datos["materiales_usuario"]    
+
+    alto= 0
+    ancho = 0
+    y = 0
+    x = 0
+
+    mapa = []
+    mapa_fondo= []
+    mapa_colores = []
+    mapa_caracteristicas = []
+    # "pared", "texto", "npc", "enemigo", "", "inicio", "interaccion"
+
+    moverse = ("flecha arriba", "flecha abajo", "flecha izquierda", "flecha derecha", "w", "a", "s", "d")
+
+    fondos = [Back.RED, Back.BLUE, Back.GREEN, Back.WHITE, Back.YELLOW, Back.CYAN, Back.BLACK, Back.MAGENTA]
+    colores= [Fore.RED, Fore.BLUE, Fore.GREEN, Fore.WHITE, Fore.YELLOW, Fore.CYAN, Fore.BLACK, Fore.MAGENTA]
+
+    lineas_simples = [" ┌─","─┘ ","─┐ ", " └─", "─┴─", "─┬─", " ├─", "───", "─┼─", "─┤ ", " │ "]
+    lineas_dobles = ["═╣ ", " ║ ", "═╗ ", "═╝ ", " ╚═", " ╔═", "═╩═", "═╦═", " ╠═", "═══", "═╬═"]
+    lineas = [lineas_simples, lineas_dobles]
+
+    texturas = ["░░░", "▒▒▒", "▓▓▓", " ░ ", " ▒ ", " ▓ "]
+
+    bloques = ["███", " █ "," ▄ ", " ▀ ", " ■ "]
+
+    otros = [" ≡ ", " ¦ ", " ¤ ", " O "]
+
+    del_usuario = []
+
+    materiales = [lineas, texturas, bloques, otros, del_usuario]
+
+    tipo = ""
+
+    material = " O "
+    anterior = "   "
+
+    fondo = 6
+    fondo_anterior = 6
+
+    color = 3
+    color_anterior = 3
+
+    salir = "N"
+    inicio = 0
+    prueba = False
+    
+    #Aqui debo de poner un if, si la cosa ya existia, para hacer un load de las variables  y saltarse lo de hacer mapa y las dimensiones
     while True:
         try:
             alto = int(input("Escoja lo alto de su lienzo : ")) + 2
@@ -667,12 +790,17 @@ def crear_pantalla():
     x = ancho//2
     punto_inicio = [y,x]
 
-    hacer_mapa(mapa, alto, ancho)
+    lista = hacer_mapa(mapa,mapa_colores, mapa_caracteristicas, mapa_fondo, alto, ancho)
+    mapa = lista[0]
+    mapa_fondo = lista[1]
+    mapa_colores = lista[2]
+    mapa_caracteristicas = lista[3]
     hacer_cara()
 
-    impresion(mapa)
+    impresion(mapa, mapa_fondo, mapa_colores)
 
     while True:
+        conversaciones.update()
         textos.update()
         accion = keyboard.read_key().lower()
         
@@ -682,7 +810,7 @@ def crear_pantalla():
                 mapa_colores [y][x] = color_anterior
                 mapa_fondo [y][x] = fondo_anterior
                 
-                y, x = movimiento_prueba(y, x, accion)
+                y, x = movimiento_prueba(y, x, alto, ancho, accion, mapa_caracteristicas)
                 
                 anterior = mapa[y][x]
                 fondo_anterior = mapa_fondo[y][x]
@@ -693,25 +821,24 @@ def crear_pantalla():
                 mapa_colores [y][x] = color
                 
                 if mapa_caracteristicas[y][x].startswith("texto"):
-                    leer()
+                    leer(mapa_caracteristicas, y, x)
                     
                 elif mapa_caracteristicas[y][x].startswith("npc"):
-                    mostrar_conversacion()
+                    mostrar_conversacion(mapa_caracteristicas, conversaciones, npcs_caras, textos, y, x)
                     
                 elif mapa_caracteristicas[y][x].startswith("interaccion"):
                     print("Tu personaje esta pensando algo, presiona ENTER para escucharlo")
                     time.sleep(.1)
                     pensar = keyboard.read_key()
                     if pensar == "enter":
-                        leer()
-                        
+                        leer(mapa_caracteristicas, y, x)
                 
             elif accion == "q":
                 prueba = False
                 
         else:
             if moverse.__contains__(accion):
-                mapa[y][x] = anterior
+                mapa [y][x] = anterior
                 mapa_colores [y][x] = color_anterior
                 mapa_fondo [y][x] = fondo_anterior
                 
@@ -738,15 +865,15 @@ def crear_pantalla():
                 if tipo == "inicio":
                     if inicio == 1:
                         while True:
-                            opcion = input("Parece que ya tienes un punto de inicio registrado, ¿quieres borrar el anterior y guardar este (S/N)? : ").upper()
-                            if opcion == "S":
+                            respuesta = input("Parece que ya tienes un punto de inicio registrado, ¿quieres borrar el anterior y guardar este (S/N)? : ").upper()
+                            if respuesta == "S":
                                 mapa_caracteristicas [punto_inicio[0]][punto_inicio[1]] = ""
                                 mapa_caracteristicas [y][x] = "inicio"
                                 
                                 punto_inicio[0] = y
                                 punto_inicio[1] = x
                                 break
-                            elif opcion == "N":
+                            elif respuesta == "N":
                                 break
                             else:
                                 print("Hubo un error camarada, solo se admiten S o N como respuesta, por favor, intentalo nuevamente")
@@ -768,13 +895,27 @@ def crear_pantalla():
             
             elif accion == "n":
                 del_usuario.append(nuevo_material())
+                
+                with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
+                    datos = json.load(archivo)
+                    
+                datos["materiales_usuario"] = del_usuario
+
+                with open(f"juego_{titulo}.json", "w", encoding="utf-8") as archivo:
+                    json.dump(datos, archivo, ensure_ascii=False)
             
             elif accion == "c":
                 color = seleccionar_color()
             
             elif accion == "p":
                 personaje = crear_personaje()
+                with open(f"juego_{titulo}.json", "r") as archivo:
+                    datos = json.load(archivo)
                 
+                datos["personaje"] = personaje
+                with open(f"juego_{titulo}.json", "w", encoding="utf-8") as archivo:
+                    json.dump(datos, archivo, ensure_ascii=False)
+                    
             elif accion == "q":
                 mapa[y][x] = anterior
                 y = punto_inicio[0]
@@ -787,7 +928,7 @@ def crear_pantalla():
                 while True:
                     respuesta = input("Quiere crear una nueva expresion para un personaje (S/N)? : ").upper().strip()
                     if respuesta == "S":
-                        crear_expresion_npc()
+                        crear_expresion_npc(npcs_caras)
                         break
                     elif respuesta == "N":
                         break
@@ -795,7 +936,7 @@ def crear_pantalla():
                         print("Solo podemos leer S o N, intente contestar de esa manera")
                         
             elif accion == "t":
-                tipo = tipo_material()
+                tipo = tipo_material(conversaciones, npcs_caras, textos)
                 if tipo == "inicio":
                     inicio = 1
             
@@ -803,39 +944,39 @@ def crear_pantalla():
                 fondo = seleccionar_color()
                 
             elif accion == "esc":
+                #Aqui deberia de poner un if antes, si ya existe una pantalla, para mas bien actualizar el json
                 while True:
                     salir = input("Seguro que quieres dejar la pantalla así como esta? Esto no podra ser cambiado posteriormente (S/N) : ").upper().strip()
                     if salir == "S":
                         while True:
                             mal_nombre = False
-                            titulo = input("Por favor, pongale un nombre a la pantalla : ")
-                            if not titulo:
+                            nombre_pantalla = input("Por favor, pongale un nombre a la pantalla : ")
+                            if not nombre_pantalla:
                                 print("Hermano, por favor llamalo de alguna manera")
                             else:
                                 while True:
                                     for i in malos_caracteres:
-                                        if i in titulo:
+                                        if i in nombre_pantalla:
                                             mal_nombre = True
                                     if mal_nombre:
                                         print("Parece ser que introdujiste caracteres que no furulan, por favor, intentalo nuevamente")
                                     else:
                                         break
                                 break
-                        data = {
+                        datos = {
                                 "alto": alto,
                                 "ancho": ancho,
-                                "personaje": personaje,
                                 "mapa": mapa,
                                 "colores": mapa_colores,
                                 "fondo": mapa_fondo,
-                                "caracteristicas": mapa_caracteristicas,
-                                "textos": textos,
-                                "caras": npcs_caras,
-                                "conversaciones": conversaciones
+                                "caracteristicas": mapa_caracteristicas
                                 }
+                        
+                        archivo = open(f"mapa_{nombre_pantalla}.json", "x")
+                        archivo.close()
 
-                        with open(f"mapa_{titulo}.json", "w", encoding="utf-8") as f:
-                            json.dump(data, f, ensure_ascii=False)
+                        with open(f"mapa_{nombre_pantalla}.json", "w", encoding="utf-8") as pantalla:
+                            json.dump(datos, pantalla, ensure_ascii=False)
                         break
                         
                     elif respuesta == "N":                  
@@ -855,24 +996,60 @@ def crear_pantalla():
             print(f"El material que esta usando tiene tipo {tipo}\n")
             print(f"El tipo de esta casilla es {mapa_caracteristicas[y][x]}")
         
-        impresion(mapa)
+        impresion(mapa, mapa_fondo, mapa_colores)
+        print(conversaciones)
+        print(npcs_caras)
 
     os.system("cls")
 
+
+#Menu principal
 while True:
+    #Encuentra donde esta instalado el programa
     ruta = os.getcwd()
+    
+    #En la misma ruta en la que esta el programa, obtiene el nombre de los otros documentos que hay
     archivos = os.listdir(ruta)
     
+    #Checamos que exista un archivo que tenga de nombre "juego_"
     for i in archivos:
-        if i.startswith("juego"):
+        if i.startswith("juego_"):
             juegos.append(i)
     
     if not juegos:
         while True:
-            respuesta = input("Parece que no tienes ningún juego de wille, deseas crear uno (S/N)? : ").upper().strip()
+            respuesta = input("Parece que no tienes ningún juego de Wil\\e, deseas crear uno (S/N)? : ").upper().strip()
             if respuesta == "S":
-                crear_pantalla()
-                break
+                while True:
+                    titulo = input("Introduzca el nombre de su juego, hay un monton de caracteres prohibidos, entonces relaja : ")
+                    if not titulo:
+                        print("Hermano, pero tampoco se trata de que no pongas nada\n")
+                    else:
+                        mal_nombre = False
+                        for i in malos_caracteres:
+                            if i in titulo:
+                                mal_nombre = True
+                        if mal_nombre:
+                            print(f"Introdujiste un caracter que no esta permitido '{i}', intentalo nuevamente")
+                        else:
+                            archivo = open(f"juego_{titulo}.json", "x")
+                            archivo.close()
+                            
+                            datos_iniciales = {
+                                                "titulo" : f"{titulo}",
+                                                "personaje" : [" O ", 3], 
+                                                "textos" : textos,
+                                                "caras" : npcs_caras,
+                                                "conversaciones" : conversaciones,
+                                                "materiales_usuario": [],
+                                                "pantallas" : []
+                                               }
+                            
+                            with open(f"juego_{titulo}.json", "w", encoding="utf-8") as archivo:
+                                json.dump(datos_iniciales, archivo, ensure_ascii = False)                                
+                            
+                            crear_pantalla()
+                            break
             elif respuesta == "N":
                 break
             else:
@@ -885,27 +1062,45 @@ while True:
                     for i in juegos:
                         print(i.split("_")[1])
                     
-                    opcion = input("Esta es una lista de los juegos que ya tienes creados, por favor, introduce el nombre del que quieras jugar : ")
-                    if juegos.__contains__(f"juego_{opcion}"):
-                        import 
+                    titulo = input("Esta es una lista de los juegos que ya tienes creados, por favor, introduce el nombre del que quieras jugar : ")
+                    if juegos.__contains__(f"juego_{titulo}.json"):
+                        #
+                        #
+                        #Aqui debes de terminar
+                        #
+                        #
+                        print("")
                     else:
                         print("El nombre que introdujiste no concuerda con ningun juego de los de la lista, por favor, intentalo de nuevo")
                         os.system("cls")
             if respuesta == "N":
                 while True:
                     mal_nombre = False
-                    juego = input("Por favor introduzca un nombre para el juego : ").strip()
-                    if not juego:
+                    titulo = input("Por favor introduzca un nombre para el juego : ").strip()
+                    if not titulo:
                         print("Hermano, pero ponle algo macho")
                     else:
                         for i in malos_caracteres:
-                            if i in juego:
+                            if i in titulo:
                                 mal_nombre = True
                         if mal_nombre:
                             print("Hermano tienes caracteres no permitidos en el nombre, por favor, intentalo de nuevo")
                         else:
-                            archivo = open(f"juego_{juego}", "x")
+                            archivo = open(f"juego_{titulo}.json", "x")
                             archivo.close()
+                            
+                            datos_iniciales = {
+                                                "titulo" : f"{titulo}",
+                                                "personaje" : [" O ", 3], 
+                                                "textos" : textos,
+                                                "caras" : npcs_caras,
+                                                "conversaciones" : conversaciones,
+                                                "materiales_usuario" : [],
+                                                "pantallas" : [] 
+                                               }
+                            
+                            with open(f"juego_{titulo}.json", "w", encoding="utf-8") as archivo:
+                                json.dump(datos_iniciales, archivo, ensure_ascii = False)                                
                             
                             input("Ahora, empezaremos a crear las pantallas del juego, presiona ENTER para continuar...")
                             crear_pantalla()
