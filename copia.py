@@ -1,7 +1,7 @@
 import keyboard, time, os, json
 from colorama import Fore, Back
 
-#Ya probamos a crear textos pero solo devuelve interacciones, ya hay materiales nuevos, personaje, textos, conversaciones, caras, debes de checar igual
+#Ya hay materiales nuevos, personaje, textos, conversaciones, caras, debes de checar igual
 #Falta poder hacer un documento con personaje, mapa, mapa_fondo, mapa_colores, mapa_caracteristicas, del_usuario, npc_caras, textos, conversaciones
 #Falta hacer todo el pedo de los json, falta hacer que se pueda editar un escenario despues de haberlo creado
 #Falta hacer que el archivo principal le designes la pantalla de inicio
@@ -464,7 +464,7 @@ def nueva_conversacion(npcs_caras, textos):
         except:
             print("Hermano, hubo un error con el dato que me tiraste, por favor, intentalo de nuevo")
         
-def nuevo_texto(textos):
+def nuevo_texto():
     os.system("cls")
     input("Crearemos un texto...\n")
     contenido = []
@@ -481,14 +481,14 @@ def nuevo_texto(textos):
         else:
             contenido.append(texto)
             while True:
-                respuesta_1= input("Quieres agregar otra linea de texto (S/N)? : ").upper()
-                if ((respuesta_1 != "S")&(respuesta_1 != "N")):
+                respuesta= input("Quieres agregar otra linea de texto (S/N)? : ").upper()
+                if ((respuesta!= "S")&(respuesta != "N")):
                     print("Por favor, solo se admite S o N como respuesta, escriba bien mi estimado")
                 else:
                     break
-            if respuesta_1 == "N":
+            if respuesta == "N":
                 break
-    return nombre_texto, contenido, respuesta_1
+    return nombre_texto, contenido
 
 def tipo_material(conversaciones, npcs_caras, textos):
     print("Presione ENTER para continuar")
@@ -516,11 +516,12 @@ def tipo_material(conversaciones, npcs_caras, textos):
         return "pared"
     
     elif ((respuesta == 2)|(respuesta == 7)):
+        eligio = respuesta
         if not textos:
             while True:
                 respuesta = input("Parece que no tienes textos hechos, quieres crear uno (S/N)?: ").upper().strip()
                 if respuesta == "S":
-                    nombre_texto, contenido, respuesta_1 = nuevo_texto(textos)
+                    nombre_texto, contenido = nuevo_texto()
                     textos[nombre_texto] = contenido
                     
                     with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
@@ -531,12 +532,12 @@ def tipo_material(conversaciones, npcs_caras, textos):
                     with open(f"juego_{titulo}.json", "w", encoding="utf-8") as archivo:
                         json.dump(datos, archivo, ensure_ascii=False)
                         
-                    if respuesta == 2:
+                    if eligio == 2:
                         return f"texto_{nombre_texto}"
                     else:
                         return f"interaccion_{nombre_texto}"
                     
-                elif respuesta_1 == "N":
+                elif respuesta == "N":
                     break
                 else:
                     print("Favor de utilizar una S o una N como respuesta")
@@ -544,7 +545,7 @@ def tipo_material(conversaciones, npcs_caras, textos):
             while True:
                 respuesta = input("Quiere crear un texto nuevo o utilizar uno antiguo (N/A)? : ").upper().strip()
                 if respuesta == "N":
-                    nombre_texto, contenido = nuevo_texto(textos)
+                    nombre_texto, contenido = nuevo_texto()
                     textos[nombre_texto] = contenido
                     
                     with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
@@ -555,7 +556,7 @@ def tipo_material(conversaciones, npcs_caras, textos):
                     with open(f"juego_{titulo}.json", "w", encoding="utf-8") as archivo:
                         json.dump(datos, archivo, ensure_ascii=False)
                         
-                    if respuesta == 2:
+                    if eligio == 2:
                         return f"texto_{nombre_texto}"
                     else:
                         f"interaccion_{nombre_texto}"
@@ -566,10 +567,10 @@ def tipo_material(conversaciones, npcs_caras, textos):
                         print(f"{contador}.- {i}")
                     respuesta = input("Seleccione el titulo del texto que quiera reutilizar : ")
                     if textos.keys().__contains__(respuesta):
-                        if respuesta == 2:
+                        if eligio == 2:
                             return f"texto_{respuesta}"
                         else:
-                            f"interaccion_{respuesta}"
+                            return f"interaccion_{respuesta}"
                 else:
                     print("Por favor, utilizar N o A como respuesta")
     
@@ -604,7 +605,7 @@ def tipo_material(conversaciones, npcs_caras, textos):
                 respuesta = input("Para crear un npc necesitas tener minimo un texto creado, deseas hacer uno nuevo (S/N)? : ").upper().strip()
                 if respuesta == "S":
                     print()
-                    nombre_texto, contenido, respuesta_1 = nuevo_texto(textos)
+                    nombre_texto, contenido = nuevo_texto()
                     textos[nombre_texto] = contenido
                     
                     with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
@@ -712,7 +713,7 @@ def mostrar_conversacion(mapa_caracteristicas, conversaciones, npcs_caras, texto
         for k in textos[conversaciones[nombre_conversacion][i][1]]:
             input(f"{k}\n") 
 
-def leer(mapa_caracteristicas, y, x):
+def leer(mapa_caracteristicas, y, x, textos):
     nombre_texto = mapa_caracteristicas[y][x].split("_")[1]
     input("...")
     for i in textos[nombre_texto]:
@@ -821,7 +822,7 @@ def crear_pantalla():
                 mapa_colores [y][x] = color
                 
                 if mapa_caracteristicas[y][x].startswith("texto"):
-                    leer(mapa_caracteristicas, y, x)
+                    leer(mapa_caracteristicas, y, x, textos)
                     
                 elif mapa_caracteristicas[y][x].startswith("npc"):
                     mostrar_conversacion(mapa_caracteristicas, conversaciones, npcs_caras, textos, y, x)
@@ -831,7 +832,7 @@ def crear_pantalla():
                     time.sleep(.1)
                     pensar = keyboard.read_key()
                     if pensar == "enter":
-                        leer(mapa_caracteristicas, y, x)
+                        leer(mapa_caracteristicas, y, x, textos)
                 
             elif accion == "q":
                 prueba = False
