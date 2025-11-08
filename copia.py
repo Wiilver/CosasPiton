@@ -1,9 +1,7 @@
 import keyboard, time, os, json
 from colorama import Fore, Back
 
-#Ya hay materiales nuevos, personaje, textos, conversaciones, caras, debes de checar igual
-#Falta poder hacer un documento con personaje, mapa, mapa_fondo, mapa_colores, mapa_caracteristicas, del_usuario, npc_caras, textos, conversaciones
-#Falta hacer todo el pedo de los json, falta hacer que se pueda editar un escenario despues de haberlo creado
+#Falta hacer que se pueda editar un escenario despues de haberlo creado, que detecte si ya hay otras pantallas creadas
 #Falta hacer que el archivo principal le designes la pantalla de inicio
 #Falta que hagas un modo para jugar como tal
 
@@ -244,7 +242,7 @@ def seleccionar_material(materiales):
                     break
                 except:
                     print("Hermano, solo se admiten numeros, por favor intentalo nuevamente")
-            if ((respuesta_2 < 0)|(respuesta_2 > len(materiales[0][respuesta_2]))):
+            if ((respuesta_2 < 0)|(respuesta_2 > len(lineas_dobles))):
                 print(f"Hermano, el indice debe de estar entre 1 y {len(materiales[0][respuesta])}, por favor intentalo nuevamente")
             else:
                 break
@@ -721,6 +719,8 @@ def leer(mapa_caracteristicas, y, x, textos):
 
 #Empieza la cosa
 def crear_pantalla():
+    
+    
     with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
         datos = json.load(archivo)
     
@@ -731,6 +731,7 @@ def crear_pantalla():
     pantallas = datos["pantallas"]
     del_usuario = datos["materiales_usuario"]    
 
+    
     alto= 0
     ancho = 0
     y = 0
@@ -882,6 +883,7 @@ def crear_pantalla():
                     mapa_caracteristicas[y][x] = tipo
                 
             elif accion == "backspace":
+                fondo_anterior = 6
                 anterior = "   "
                 mapa[y][x] = "   "
                 mapa_colores[y][x] = 3
@@ -923,6 +925,8 @@ def crear_pantalla():
                 x = punto_inicio[1]
                 material = personaje[0]
                 color = personaje[1]
+                fondo_anterior = 6
+                fondo = 6                
                 prueba = True
             
             elif accion == "r":
@@ -947,7 +951,7 @@ def crear_pantalla():
             elif accion == "esc":
                 #Aqui deberia de poner un if antes, si ya existe una pantalla, para mas bien actualizar el json
                 while True:
-                    salir = input("Seguro que quieres dejar la pantalla así como esta? Esto no podra ser cambiado posteriormente (S/N) : ").upper().strip()
+                    salir = input("Quieres guardar los cambios que le hiciste a la pantalla? Esto puede ser cambiado posteriormente (S/N) : ").upper().strip()
                     if salir == "S":
                         while True:
                             mal_nombre = False
@@ -976,6 +980,14 @@ def crear_pantalla():
                         archivo = open(f"mapa_{nombre_pantalla}.json", "x")
                         archivo.close()
 
+                        with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
+                            datos = json.load(archivo)
+                        
+                        datos["pantallas"].append(nombre_pantalla)
+                        
+                        with open(f"juego_{titulo}.json", "w", encoding= "utf-8") as archivo:
+                            json.dump(datos, archivo, ensure_ascii=False)
+                        
                         with open(f"mapa_{nombre_pantalla}.json", "w", encoding="utf-8") as pantalla:
                             json.dump(datos, pantalla, ensure_ascii=False)
                         break
@@ -1000,6 +1012,7 @@ def crear_pantalla():
         impresion(mapa, mapa_fondo, mapa_colores)
         print(conversaciones)
         print(npcs_caras)
+        print(del_usuario)
 
     os.system("cls")
 
