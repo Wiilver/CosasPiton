@@ -1,4 +1,5 @@
 import os
+import json
 import requests
 import matplotlib.pyplot as plt
 
@@ -205,6 +206,18 @@ def menu():
         modo = menu_y_modo()
         busqueda = que_buscar(modo)
         datos = buscar(modo, busqueda)
+        
+        archivo = open("datos_libro.json", "x")
+        archivo.close()
+
+        #En esta parte del codigo usamos la palabra clave with para no tener la necesidad de cerrar el archivo
+        #El encoding es encoding y el ensure ascii es para evitar que truene si usamos caracteres especiales
+        #El indent es para que no quede todo en una sola linea
+        #En los archivos dejamos creados un archivo para un autor en especifico y un libro en especifico          
+        
+        with open("datos_libro.json", "w", encoding= "utf=8") as archivo:
+            json.dump(datos, archivo, indent=4, ensure_ascii=False)
+        
         opcion = impresion_y_seleccion(datos, modo)
         if opcion == 0:
             break
