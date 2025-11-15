@@ -2,18 +2,23 @@ import os
 import json
 import requests
 import matplotlib.pyplot as plt
-
-def saludo_inicial():
-    print("--------------------------------\n",
-          "      Bienvenido a Librazos     \n",
-          "--------------------------------\n",
-          "Este programa esta diseñado para\n",
-          "proporcionar informacion concisa\n",
-          " resumida y graficada acerca de \n",
-          "         LIBROS Y AUTORES       \n",
-          "\n",
-          "   PRESIONE ENTER PARA INICIAR  \n")
-    input()
+import flet as ft
+def saludo_inicial(page: ft.Page):
+    page.title = "Librazos"
+    page.horizontal_alignment = ft.CrossAxisAlignment.CENTER
+    saludo = ft.Text(
+        "--------------------------------\n"
+        "      Bienvenido a Librazos     \n"
+        "Este programa esta diseñado para\n"
+        "proporcionar informacion concisa\n"
+        " resumida y graficada acerca de \n"
+        "         LIBROS Y AUTORES       \n"
+        "\n"
+        "   PRESIONE ENTER PARA INICIAR  \n"
+    )
+    
+    page.add(saludo)
+ft.app(target=saludo_inicial)
     
 def menu_y_modo():
     #Este comando limpia la consola, para evitar que se sature de texto
