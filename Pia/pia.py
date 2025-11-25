@@ -207,7 +207,7 @@ def menu():
         busqueda = que_buscar(modo)
         datos = buscar(modo, busqueda)
         
-        archivo = open("datos_libro.json", "x")
+        archivo = open(f"{busqueda}.json", "x")
         archivo.close()
 
         #En esta parte del codigo usamos la palabra clave with para no tener la necesidad de cerrar el archivo
@@ -215,7 +215,7 @@ def menu():
         #El indent es para que no quede todo en una sola linea
         #En los archivos dejamos creados un archivo para un autor en especifico y un libro en especifico          
         
-        with open("datos_libro.json", "w", encoding= "utf=8") as archivo:
+        with open(f"{busqueda}.json", "w", encoding= "utf=8") as archivo:
             json.dump(datos, archivo, indent=4, ensure_ascii=False)
         
         opcion = impresion_y_seleccion(datos, modo)
@@ -224,8 +224,9 @@ def menu():
         elif opcion == -1:
             print("Iniciaremos el proceso nuevamente")
         print(datos["docs"][0].keys())
+        return busqueda
 
-menu()
+datos = menu()
 
 #Aqui esta doble para recordar como podia usarse la distincion entre busqueda general y autor
 """url = "https://openlibrary.org/search.json?q=apuntes+del+subsuelo"

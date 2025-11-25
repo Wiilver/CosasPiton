@@ -1,24 +1,21 @@
 import re
 import os
-import numpy
+import json
+import numpy 
 import statistics
+import matplotlib.pyplot as plt
+#from pia import datos   
+os.chdir(r"C:\PB_pia\CosasPiton\Pia")
 
-ruta = os.getcwd()
-os.system(f'cd "{ruta}"')
-archivos = os.listdir(ruta)
-print(archivos)
-
-if "datos.json" not in archivos:
-    print("Parece ser que no tienes el archivo necesario para correr este script")
-else:
-    with open("datos.json", "r", encoding="utf-8") as archivo:
-        datos = archivo.read()
+with open("datos.json", "r", encoding="utf-8") as archivo:
+    datos = json.load(archivo)
 
 temas_principales = []
 num_trabajos = []
 nacimientos = []
 decesos = []
 ratings = [0, 0, 0, 0, 0, 0]
+
 for i in datos["docs"]:
     if "top_subjects" in i.keys():
         if len(i["top_subjects"]) <= 3:
@@ -30,11 +27,11 @@ for i in datos["docs"]:
     
     #Estamos usando expresiones regulares para obtener unicamente el año
     if "birth_date" in i.keys():
-        año = re.findall("\d{4}", i["birth_date"])
+        año = re.findall("d{4}$", i["birth_date"])
         nacimientos.append(año)
-    
+
     if "death_date" in i.keys():
-        año = re.findall("\d{4}", i["death_date"])
+        año = re.findall("d{4}$", i["death_date"])
         decesos.append(año)
     
     #Esta primera es el numero total
@@ -58,16 +55,28 @@ reseñas.append(ratings[3])
 reseñas.append(ratings[4])
 reseñas.append(ratings[5])
 
-porcentaje_reseñas.append(reseñas[0]/num_reseñas)
-porcentaje_reseñas.append(reseñas[1]/num_reseñas)
-porcentaje_reseñas.append(reseñas[2]/num_reseñas)
-porcentaje_reseñas.append(reseñas[3]/num_reseñas)
-porcentaje_reseñas.append(reseñas[4]/num_reseñas)
+porcentaje_reseñas.append(int((reseñas[0]/num_reseñas)*100))
+porcentaje_reseñas.append(int((reseñas[1]/num_reseñas)*100))
+porcentaje_reseñas.append(int((reseñas[2]/num_reseñas)*100))
+porcentaje_reseñas.append(int((reseñas[3]/num_reseñas)*100))
+porcentaje_reseñas.append(int((reseñas[4]/num_reseñas)*100))
+porcentaje_reseñas_labels = [1,2,3,4,5]
 
 moda_reseñas = statistics.mode(ratings)
-desviacion_estandar = statistics.stdev(reseñas)
+desviacion_estandar = int(statistics.stdev(reseñas))
 
 reseñas_media = numpy.mean(reseñas)
 nacimiento_media = numpy.mean(nacimientos)
 muertes_media = numpy.mean(decesos)
 trabajos_media = numpy.mean(num_trabajos)
+
+plt.pie(porcentaje_reseñas, labels= porcentaje_reseñas_labels,center=(.175,0))
+plt.title("Reseñas medias para autors buscados",y=1.05)
+plt.text(-2,1.2,f"Media de las reseñas : {reseñas_media}")
+plt.text(-2,1.075,f"Moda de las reseñas : {moda_reseñas}")
+plt.text(-2,-1.2,f"Desviacion estandar de las reseñas : {desviacion_estandar}")
+plt.text(-2,-1.375,f"Numero de trabajos : {num_trabajos[0]}")
+plt.show()
+
+plt.close()
+plt.
