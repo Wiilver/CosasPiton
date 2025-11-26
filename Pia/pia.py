@@ -1,7 +1,7 @@
 import os
 import json
 import requests
-import importlib
+
 def saludo_inicial():
     print("--------------------------------\n",
           "      Bienvenido a Librazos     \n",
@@ -135,6 +135,9 @@ def impresion_y_seleccion(datos, modo):
     #Resulto ser que hay un problema con el API, solo devuelve los primeros 100 resultados que encuentra unu 
     
     os.system("cls")
+    if not datos:
+        print("No se dieron resultados, se cerrara el programa")
+        return None
     if len(datos["docs"]) == 0:
         while True:
             repetir = input("Parece que no hubo ninguna coincidencia con tu busqueda, quieres realizar una nueva (S/N)? : ")
@@ -221,21 +224,17 @@ def menu_busqueda():
             json.dump(datos, archivo, indent=4, ensure_ascii=False)
         
         opcion = impresion_y_seleccion(datos, modo)
+        if opcion == None:
+            break
         if opcion == 0:
             break
         elif opcion == -1:
             print("Iniciaremos el proceso nuevamente")
         else:
             #Es el indice del diccionario que tenemos en datos
-            return opcion-1, modo, datos
+            return opcion-1, modo, datos, nombre
 
-#No sirve
-def limpieza_de_datos(nombre):
-    with open(f"{nombre}.json", "r", encoding="utf-8") as archivo:
-        datos = json.load(archivo)
-    
-
-def menu_graficas(indice, modo):
+def menu_graficas(indice, modo, datos):
     while True:
         os.system("cls")
         print(
@@ -259,7 +258,7 @@ def menu_graficas(indice, modo):
         print("Datos de la búsqueda seleccionada:\n")
 
         try:
-            seleccionado = datos["docs"][opcion]
+            seleccionado = datos[indice]
         except Exception as e:
             print("Error al acceder al diccionario seleccionado:", e)
             input("ENTER para continuar")
@@ -269,18 +268,25 @@ def menu_graficas(indice, modo):
 
         print("\n----------------------------------")
         input("Presiona ENTER para volver al menú...")
-        return menu_graficas(indice, modo)
+        return menu_graficas(indice, modo, datos)
     elif opcion == 2:
         print("Mostrando gráficas")
-        import pia2
-        importlib.reload(pia2)         
+        from pia2 import graficar
+        graficar()
+        
         input("\nPresiona ENTER para continuar")
-        return menu_graficas(indice, modo)
+        return menu_graficas(indice, modo, datos)
     elif opcion == 3:
-        return menu_y_modo()
-    lista = menu_busqueda()
+        lista = menu_busqueda()
+        opcion = lista[0]
+        modo = lista[1]
+        datos = lista[2]
+        menu_graficas(modo, opcion , datos["docs"])
+        
+lista = menu_busqueda()
 
-    opcion = lista[0]
-    modo = lista[1]
-    datos = lista[2]
-    menu_graficas(modo, opcion , datos["docs"])
+opcion = lista[0]
+modo = lista[1]
+datos = lista[2]
+nombre = lista[3]
+menu_graficas(modo, opcion , datos["docs"])
