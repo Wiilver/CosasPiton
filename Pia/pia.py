@@ -1,7 +1,6 @@
 import os
 import json
 import requests
-import matplotlib.pyplot as plt
 
 def saludo_inicial():
     print("--------------------------------\n",
@@ -215,8 +214,8 @@ def menu():
         #El indent es para que no quede todo en una sola linea
         #En los archivos dejamos creados un archivo para un autor en especifico y un libro en especifico          
         
-        with open("datos_libro.json", "w", encoding= "utf=8") as archivo:
-            json.dump(datos, archivo, indent=4, ensure_ascii=False)
+        #with open("datos_libro.json", "w", encoding= "utf=8") as archivo:
+         #   json.dump(datos, archivo, indent=4, ensure_ascii=False)
         
         opcion = impresion_y_seleccion(datos, modo)
         if opcion == 0:
