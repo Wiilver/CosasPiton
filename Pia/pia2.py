@@ -79,4 +79,3 @@ plt.text(-2,-1.375,f"Numero de trabajos : {num_trabajos[0]}")
 plt.show()
 
 plt.close()
-plt.

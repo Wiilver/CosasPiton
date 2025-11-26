@@ -18,6 +18,7 @@ def menu_y_modo():
     #Este comando limpia la consola, para evitar que se sature de texto
     os.system("cls")
     while True:
+        modo = 0
         try:
             print(
                 "Librazos te da la opcion de buscar autores y libros, por favor, seleccione la opcion que desee :\n",
@@ -234,7 +235,7 @@ def limpieza_de_datos(nombre):
         datos = json.load(archivo)
     
 
-def menu_graficas(indice, modo):
+def menu_graficas(indice, modo, lista_diccionarios):
     while True:
         os.system("cls")
         print(
@@ -253,9 +254,28 @@ def menu_graficas(indice, modo):
                 print("La respuesta que introdujiste estuvo fuera del rango esperado")
         except:
             print("Parece que hubo un error con el dato que introdujiste, por favor, intentalo nuevamente")
-        if opcion == 1:
-            
-lista = menu_busqueda()
+    if opcion == 1:
+        os.system("cls")
+        print("Datos de la búsqueda seleccionada:\n")
 
-opcion = lista[0]
-modo = lista[1]
+        try:
+            seleccionado = datos["docs"][opcion]
+        except Exception as e:
+            print("Error al acceder al diccionario seleccionado:", e)
+            input("ENTER para continuar")
+        
+        for llave, valor in seleccionado.items():
+            print(f"{llave}: {valor}")
+
+        print("\n----------------------------------")
+        input("Presiona ENTER para volver al menú...")
+        return menu_graficas(indice, modo, lista_diccionarios)
+    elif opcion == 3:
+        return menu_y_modo()
+while True:
+    lista = menu_busqueda()
+
+    opcion = lista[0]
+    modo = lista[1]
+    datos = lista[2]
+    menu_graficas(modo, opcion , datos["docs"])
