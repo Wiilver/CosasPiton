@@ -1,7 +1,6 @@
 import os
 import json
 import requests
-import matplotlib.pyplot as plt
 
 def saludo_inicial():
     print("--------------------------------\n",
@@ -49,11 +48,12 @@ def que_buscar(modo):
             print("Necesita introducir al menos un caracter, intentelo de nuevo")
         else:
             busqueda = busqueda.strip().lower()
+            NOMBRE = busqueda
             busqueda = busqueda.split(" ")
             cadena = ""
             for i in busqueda:
                 cadena = cadena + i + "+"
-            return cadena
+            return cadena, NOMBRE
 
 def buscar(modo, busqueda):
     if modo == 1:
@@ -199,15 +199,16 @@ def impresion_y_seleccion(datos, modo):
             except:
                 input("Hubo un error con el numero que ingresaste, por favor, intentalo nuevamente")
             
-def menu():
+def menu_busqueda():
     saludo_inicial()
     while True:
         os.system("cls")
         modo = menu_y_modo()
-        busqueda = que_buscar(modo)
-        datos = buscar(modo, busqueda)
+        lista = que_buscar(modo)
+        nombre = lista[1]
+        datos = buscar(modo, lista[0])
         
-        archivo = open(f"{busqueda}.json", "x")
+        archivo = open(f"{nombre}.json", "x")
         archivo.close()
 
         #En esta parte del codigo usamos la palabra clave with para no tener la necesidad de cerrar el archivo
@@ -215,7 +216,7 @@ def menu():
         #El indent es para que no quede todo en una sola linea
         #En los archivos dejamos creados un archivo para un autor en especifico y un libro en especifico          
         
-        with open("datos_libro.json", "w", encoding= "utf=8") as archivo:
+        with open(f"{nombre}.json", "w", encoding= "utf=8") as archivo:
             json.dump(datos, archivo, indent=4, ensure_ascii=False)
         
         opcion = impresion_y_seleccion(datos, modo)
@@ -223,37 +224,36 @@ def menu():
             break
         elif opcion == -1:
             print("Iniciaremos el proceso nuevamente")
-        print(datos["docs"][0].keys())
-        return busqueda
+        else:
+            return opcion-1, modo, datos
 
-datos = menu()
+def limpieza_de_datos(nombre):
+    with open(f"{nombre}.json", "r", encoding="utf-8") as archivo:
+        datos = json.load(archivo)
+    
 
-#Aqui esta doble para recordar como podia usarse la distincion entre busqueda general y autor
-"""url = "https://openlibrary.org/search.json?q=apuntes+del+subsuelo"
-url = "https://openlibrary.org/search/authors.json?q=miguel+de+cervantes"
+def menu_graficas(indice, modo):
+    while True:
+        os.system("cls")
+        print(
+            "Esta es una lista de lo que puede hacer con los datos obtenidos:\n"
+            "1.- Imprimir los datos de la busqueda que hizo\n"
+            "2.- Visualizar graficamente estadisticas de resultados similares\n"
+            "3.- Hacer una busqueda distinta\n"
+            "4.- Salir\n"
+            "Opcion : "
+            )
+        try:
+            opcion = int(input())
+            if ((opcion>0)&(opcion<5)):
+                break
+            else:
+                print("La respuesta que introdujiste estuvo fuera del rango esperado")
+        except:
+            print("Parece que hubo un error con el dato que introdujiste, por favor, intentalo nuevamente")
+        if opcion == 1:
+            
+lista = menu_busqueda()
 
-try:
-    #Aqui tratamos de llamar a la API
-    respuesta = requests.get(url)
-    
-    #Verificamos si hubo un error con la solicitud
-    respuesta.raise_for_status()
-    
-    #Convertimos los datos a JSON
-    datos = respuesta.json()
-    
-    #Imprimimos los datos
-    #El JSON divide la informacion en secciones
-    
-    #Las llaves que da al inicio son 'numFound', 'start', 'numFoundExact', 'num_found', 'documentation_url', 'q', 'offset', 'docs'
-    print(datos.keys())
-    print(datos["docs"][0]["ratings_average"])
-    print(datos["docs"][0].keys())
-    #Ofrecerle al usuario buscar autores o libros
-    #Ocuapamos incluir en el algoritmo que busque en cada una de las listas principales y que se vaya con la que tenga el mayor work_count
-    #En la parte de los autores hariamos graficos con los distintos numeros de trabajos publicados por idioma
-    #En la parte de los libros mostrar la lista completa de libros para que el usuario pueda escoger especificamente que libro usar
-    #Usar graficos para ver que años publicaban distintas ediciones
-    
-except requests.exceptions.RequestException as e:
-    print("Salio algo mal hermano : ", e)"""
+opcion = lista[0]
+modo = lista[1]
