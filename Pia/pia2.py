@@ -5,7 +5,8 @@ import numpy
 import statistics
 import matplotlib.pyplot as plt
 #from pia import datos   
-os.chdir(r"C:\PB_pia\CosasPiton\Pia")
+#os.chdir(r"C:\PB_pia\CosasPiton\Pia")
+os.chdir("/home/luis/mangoProyecto/CosasPiton/Pia")
 
 with open("datos.json", "r", encoding="utf-8") as archivo:
     datos = json.load(archivo)
@@ -79,4 +80,3 @@ plt.text(-2,-1.375,f"Numero de trabajos : {num_trabajos[0]}")
 plt.show()
 
 plt.close()
-plt.
