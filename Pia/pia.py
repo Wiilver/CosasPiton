@@ -225,8 +225,10 @@ def menu_busqueda():
         elif opcion == -1:
             print("Iniciaremos el proceso nuevamente")
         else:
+            #Es el indice del diccionario que tenemos en datos
             return opcion-1, modo, datos
 
+#No sirve
 def limpieza_de_datos(nombre):
     with open(f"{nombre}.json", "r", encoding="utf-8") as archivo:
         datos = json.load(archivo)
