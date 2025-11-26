@@ -1,7 +1,7 @@
 import os
 import json
 import requests
-
+import importlib
 def saludo_inicial():
     print("--------------------------------\n",
           "      Bienvenido a Librazos     \n",
@@ -235,7 +235,7 @@ def limpieza_de_datos(nombre):
         datos = json.load(archivo)
     
 
-def menu_graficas(indice, modo, lista_diccionarios):
+def menu_graficas(indice, modo):
     while True:
         os.system("cls")
         print(
@@ -269,10 +269,15 @@ def menu_graficas(indice, modo, lista_diccionarios):
 
         print("\n----------------------------------")
         input("Presiona ENTER para volver al menú...")
-        return menu_graficas(indice, modo, lista_diccionarios)
+        return menu_graficas(indice, modo)
+    elif opcion == 2:
+        print("Mostrando gráficas")
+        import pia2
+        importlib.reload(pia2)         
+        input("\nPresiona ENTER para continuar")
+        return menu_graficas(indice, modo)
     elif opcion == 3:
         return menu_y_modo()
-while True:
     lista = menu_busqueda()
 
     opcion = lista[0]
