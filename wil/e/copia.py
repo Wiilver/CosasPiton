@@ -1,9 +1,9 @@
 import keyboard, time, os, json
 from colorama import Fore, Back
 
-#Falta hacer que se pueda editar un escenario despues de haberlo creado, que detecte si ya hay otras pantallas creadas
 #Falta hacer que el archivo principal le designes la pantalla de inicio
 #Falta que hagas un modo para jugar como tal
+#Falta que puedas conectar las pantallas entre si
 
 #Variables
 
@@ -718,9 +718,9 @@ def leer(mapa_caracteristicas, y, x, textos):
         input(f"{i}\n")
 
 #Empieza la cosa
-def crear_pantalla():
+def crear_pantalla(pantalla = None):
     
-    
+    respuesta = "N"
     with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
         datos = json.load(archivo)
     
@@ -731,17 +731,44 @@ def crear_pantalla():
     pantallas = datos["pantallas"]
     del_usuario = datos["materiales_usuario"]    
 
-    
-    alto= 0
-    ancho = 0
-    y = 0
-    x = 0
+    if pantalla is not None:
+        with open(f"mapa_{pantalla}.json", "r", encoding= "utf-8") as archivo:
+            datos = json.load(archivo)
+            
+        alto = datos["alto"]
+        ancho = datos["ancho"]
+        x = ancho//2
+        y = alto //2
+        mapa = datos["mapa"]
+        mapa_colores = datos["colores"]
+        mapa_fondo = datos["fondo"]
+        mapa_caracteristicas = datos["caracteristicas"]
 
-    mapa = []
-    mapa_fondo= []
-    mapa_colores = []
-    mapa_caracteristicas = []
-    # "pared", "texto", "npc", "enemigo", "", "inicio", "interaccion"
+    else:
+    
+        alto= 0
+        ancho = 0
+        y = 0
+        x = 0
+        mapa = []
+        mapa_fondo= []
+        mapa_colores = []
+        mapa_caracteristicas = []
+        # "pared", "texto", "npc", "enemigo", "", "inicio", "interaccion"
+        while True:
+            try:
+                alto = int(input("Escoja lo alto de su lienzo : ")) + 2
+                ancho = int(input("Escoja lo ancho de su lienzo: ")) + 2
+                break
+            except:
+                print("Hermano, solo se admiten numeros, por favor intentalo nuevamente")
+        
+        lista = hacer_mapa(mapa,mapa_colores, mapa_caracteristicas, mapa_fondo, alto, ancho)
+        mapa = lista[0]
+        mapa_fondo = lista[1]
+        mapa_colores = lista[2]
+        mapa_caracteristicas = lista[3]
+        hacer_cara()
 
     moverse = ("flecha arriba", "flecha abajo", "flecha izquierda", "flecha derecha", "w", "a", "s", "d")
 
@@ -757,8 +784,6 @@ def crear_pantalla():
     bloques = ["███", " █ "," ▄ ", " ▀ ", " ■ "]
 
     otros = [" ≡ ", " ¦ ", " ¤ ", " O "]
-
-    del_usuario = []
 
     materiales = [lineas, texturas, bloques, otros, del_usuario]
 
@@ -778,28 +803,12 @@ def crear_pantalla():
     prueba = False
     
     #Aqui debo de poner un if, si la cosa ya existia, para hacer un load de las variables  y saltarse lo de hacer mapa y las dimensiones
-    while True:
-        try:
-            alto = int(input("Escoja lo alto de su lienzo : ")) + 2
-            ancho = int(input("Escoja lo ancho de su lienzo: ")) + 2
-            break
-        except:
-            print("Hermano, solo se admiten numeros, por favor intentalo nuevamente")
 
     input("Presione ENTER para continuar")
 
     y = alto//2
     x = ancho//2
     punto_inicio = [y,x]
-
-    lista = hacer_mapa(mapa,mapa_colores, mapa_caracteristicas, mapa_fondo, alto, ancho)
-    mapa = lista[0]
-    mapa_fondo = lista[1]
-    mapa_colores = lista[2]
-    mapa_caracteristicas = lista[3]
-    hacer_cara()
-
-    impresion(mapa, mapa_fondo, mapa_colores)
 
     while True:
         conversaciones.update()
@@ -953,21 +962,6 @@ def crear_pantalla():
                 while True:
                     salir = input("Quieres guardar los cambios que le hiciste a la pantalla? Esto puede ser cambiado posteriormente (S/N) : ").upper().strip()
                     if salir == "S":
-                        while True:
-                            mal_nombre = False
-                            nombre_pantalla = input("Por favor, pongale un nombre a la pantalla : ")
-                            if not nombre_pantalla:
-                                print("Hermano, por favor llamalo de alguna manera")
-                            else:
-                                while True:
-                                    for i in malos_caracteres:
-                                        if i in nombre_pantalla:
-                                            mal_nombre = True
-                                    if mal_nombre:
-                                        print("Parece ser que introdujiste caracteres que no furulan, por favor, intentalo nuevamente")
-                                    else:
-                                        break
-                                break
                         datos = {
                                 "alto": alto,
                                 "ancho": ancho,
@@ -976,23 +970,41 @@ def crear_pantalla():
                                 "fondo": mapa_fondo,
                                 "caracteristicas": mapa_caracteristicas
                                 }
+                        if pantalla == None:
+                            while True:
+                                mal_nombre = False
+                                nombre_pantalla = input("Por favor, pongale un nombre a la pantalla : ")
+                                if not nombre_pantalla:
+                                    print("Hermano, por favor llamalo de alguna manera")
+                                else:
+                                    while True:
+                                        for i in malos_caracteres:
+                                            if i in nombre_pantalla:
+                                                mal_nombre = True
+                                        if mal_nombre:
+                                            print("Parece ser que introdujiste caracteres que no furulan, por favor, intentalo nuevamente")
+                                        else:
+                                            break
+                                    break
                         
-                        archivo = open(f"mapa_{nombre_pantalla}.json", "x")
-                        archivo.close()
-
-                        with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
-                            datos = json.load(archivo)
+                            archivo = open(f"mapa_{nombre_pantalla}.json", "x")
+                            archivo.close()
+                            
+                            with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
+                                datos_universales = json.load(archivo)
+                            datos_universales["pantallas"].append(nombre_pantalla)
                         
-                        datos["pantallas"].append(nombre_pantalla)
-                        
-                        with open(f"juego_{titulo}.json", "w", encoding= "utf-8") as archivo:
-                            json.dump(datos, archivo, ensure_ascii=False)
-                        
-                        with open(f"mapa_{nombre_pantalla}.json", "w", encoding="utf-8") as pantalla:
-                            json.dump(datos, pantalla, ensure_ascii=False)
+                            with open(f"juego_{titulo}.json", "w", encoding= "utf-8") as archivo:
+                                json.dump(datos_universales, archivo, ensure_ascii=False)
+                            
+                            with open(f"mapa_{nombre_pantalla}.json", "w", encoding="utf-8") as pantalla:
+                                json.dump(datos, pantalla, ensure_ascii=False)
+                        else:
+                            with open(f"mapa_{pantalla}.json", "w", encoding="utf-8") as pantalla_actual:
+                                json.dump(datos, pantalla_actual, ensure_ascii=False)
                         break
                         
-                    elif respuesta == "N":                  
+                    elif salir == "N":                  
                         break
             
             else:
@@ -1063,7 +1075,47 @@ while True:
                                 json.dump(datos_iniciales, archivo, ensure_ascii = False)                                
                             
                             crear_pantalla()
+                            while True:
+                                while True:
+                                    try:
+                                        print(
+                                            "Estas son sus siguientes opciones :\n",
+                                            "1.- Editar una pantalla ya existente\n",
+                                            "2.- Crear una nueva pantalla\n",
+                                            "3.- Terminar el juego\n"
+                                            "Opcion : "
+                                        )
+                                        respuesta = int(input())
+                                        if ((respuesta > 0)&(respuesta < 4)):
+                                            break
+                                        else:
+                                            print("Dato fuera del rango, por favor intentelo de nuevo")
+                                    except:
+                                        print("Hubo un error con el dato que introdijiste, por favor, intentalo de nuevo")
+                                if respuesta == 1:
+                                    with open(f"juego_{titulo}.json", "r", encoding="utf-8") as archivo:
+                                        datos = json.load(archivo)
+                                    pantallas = datos["pantallas"]
+                                    while True:
+                                        try:
+                                            for i in range(0, len(pantallas)):
+                                                print(f"{i+1}.- {pantallas[i]}")
+                                            respuesta = int(input("\nEsta es una lista de las pantallas que tienes creadas, ingresa el numero de la que quieras editar : "))-1
+                                            if ((respuesta < 0)|(respuesta > len(pantallas)-1)):
+                                                print("El numero que introdujiste se encuentra fuera del rango especificado, por favor, intentalo nuevamente")
+                                            else:
+                                                break
+                                        except:
+                                            print("Hubo un error con el comando que introdujiste")                                   
+                                    pantalla_editar = pantallas[respuesta]
+                                    crear_pantalla(pantalla_editar)
+                                elif respuesta == 2:
+                                    crear_pantalla()
+                                else:
+                                    break
                             break
+                    break
+                break
             elif respuesta == "N":
                 break
             else:

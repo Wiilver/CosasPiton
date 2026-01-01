@@ -1,0 +1,74 @@
+{
+    "numFound": 6,
+    "docs": [
+        {
+            "author_name": [
+                "Stefania Lepera",
+                "Marc Cornelis"
+            ],
+            "edition_count": 1,
+            "first_publish_year": 2020,
+            "title": "El camino de los Reyes Magos"
+        },
+        {
+            "author_name": [
+                "Brandon Sanderson"
+            ],
+            "edition_count": 29,
+            "first_publish_year": 2010,
+            "language": [
+                "pol",
+                "spa",
+                "por",
+                "eng",
+                "ger"
+            ],
+            "title": "The Way of Kings"
+        },
+        {
+            "author_name": [
+                "Saúl Trejo Reyes"
+            ],
+            "edition_count": 1,
+            "first_publish_year": 1988,
+            "language": [
+                "spa"
+            ],
+            "title": "Empleo para todos"
+        },
+        {
+            "author_name": [
+                "María Teresa Muñoz Espinosa",
+                "Jose Carlos Castañeda Reyes"
+            ],
+            "edition_count": 2,
+            "first_publish_year": 2021,
+            "language": [
+                "spa"
+            ],
+            "title": "Los Animales Enseñaron el Camino..."
+        },
+        {
+            "author_name": [
+                "Alfonso Reyes"
+            ],
+            "edition_count": 1,
+            "first_publish_year": 2019,
+            "language": [
+                "spa"
+            ],
+            "title": "Obras Completas Vol. 25"
+        },
+        {
+            "author_name": [
+                "Arturo Castrillo"
+            ],
+            "edition_count": 1,
+            "first_publish_year": 1941,
+            "language": [
+                "spa"
+            ],
+            "title": "Garúas de enero, cuentos"
+        }
+    ]
+}
